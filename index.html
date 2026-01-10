@@ -1,1 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INV-PRO v1.1 - PACKING T</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root { --bg: #0b1120; --sidebar: #0f172a; --card: #1e293b; --primary: #2563eb; --success: #10b981; --warning: #f97316; --text: #f8fafc; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 240px; background: var(--sidebar); border-right: 1px solid #334155; padding: 20px; display: flex; flex-direction: column; }
+        .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .logo span { color: var(--primary); font-size: 12px; }
+        
+        .nav-item { padding: 12px; color: #94a3b8; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
+        .main { flex: 1; padding: 25px; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Formularios más pequeños como pediste */
+        .form-container { background: var(--card); padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+        
+        input, select { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; width: 100%; box-sizing: border-box; }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; display: block; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        
+        /* Estilo de tabla CAP 1 */
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        th { background: #1e293b; padding: 12px; text-align: left; font-size: 12px; color: #94a3b8; }
+        td { padding: 12px; border-bottom: 1px solid #334155; font-size: 14px; }
+        
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .optimo { background: #064e3b; color: #10b981; }
+        .alerta { background: #450a0a; color: #ef4444; }
+
+        .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .report-card { background: var(--card); padding: 20px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.3s; border: 1px solid transparent; }
+        .report-card:hover { border-color: var(--primary); background: #26334d; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">📦 INV-PRO <span>v1.1</span></div>
+        <div class="nav-item active" onclick="showPage('dashboard', this)">📊 Dashboard</div>
+        <div class="nav-item" onclick="showPage('existencias', this)">📦 Existencias</div>
+        <div class="nav-item" onclick="showPage('entradas', this)">⬇️ Entradas</div>
+        <div class="nav-item" onclick="showPage('salidas', this)">⬆️ Salidas</div>
+        <div class="nav-item" onclick="showPage('reportes', this)">📋 Reportes</div>
+    </div>
+
+    <div class="main">
+        <div id="page-existencias" class="page">
+            <div class="form-container">
+                <h3 style="margin-top:0">Nuevo Producto</h3>
+                <div class="form-grid">
+                    <div class="input-group full"><label>Código</label><input type="text" id="ex-cod"></div>
+                    <div class="input-group full"><label>Material</label><input type="text" id="ex-nom"></div>
+                    <div class="input-group"><label>Stock Inicial</label><input type="number" id="ex-ini"></div>
+                    <div class="input-group"><label>Stock Mínimo</label><input type="number" id="ex-min"></div>
+                </div>
+                <button class="btn" style="background: var(--primary)" onclick="crearProducto()">Guardar Registro</button>
+            </div>
+            <table>
+                <thead><tr><th>CÓDIGO</th><th>MATERIAL</th><th>STOCK REAL</th><th>MÍNIMO</th><th>ESTADO</th></tr></thead>
+                <tbody id="tabla-existencias"></tbody>
+            </table>
+        </div>
+
+        <div id="page-entradas" class="page">
+            <div class="form-container">
+                <h3 style="color: var(--success)">⬇️ Registrar Entrada</h3>
+                <div class="form-grid">
+                    <div class="input-group full"><label>Producto</label><select id="in-sel"></select></div>
+                    <div class="input-group"><label>Fecha</label><input type="date" id="in-fecha"></div>
+                    <div class="input-group"><label>N° Guía</label><input type="text" id="in-guia"></div>
+                    <div class="input-group full"><label>Cantidad</label><input type="number" id="in-cant"></div>
+                    <div class="input-group full"><label>Chofer</label><input type="text" id="in-chofer"></div>
+                    <div class="input-group"><label>Patente</label><input type="text" id="in-pat"></div>
+                    <div class="input-group"><label>Procedencia</label><input type="text" id="in-proc"></div>
+                </div>
+                <button class="btn" style="background: var(--success)" onclick="movimiento('IN')">Guardar Registro</button>
+            </div>
+        </div>
+
+        <div id="page-salidas" class="page">
+            <div class="form-container">
+                <h3 style="color: var(--warning)">⬆️ Registrar Salida</h3>
+                <div class="form-grid">
+                    <div class="input-group full"><label>Producto</label><select id="out-sel"></select></div>
+                    <div class="input-group"><label>Fecha</label><input type="date" id="out-fecha"></div>
+                    <div class="input-group"><label>N° Guía</label><input type="text" id="out-guia"></div>
+                    <div class="input-group full"><label>Cantidad</label><input type="number" id="out-cant"></div>
+                    <div class="input-group full"><label>Chofer</label><input type="text" id="out-chofer"></div>
+                    <div class="input-group"><label>Patente</label><input type="text" id="out-pat"></div>
+                    <div class="input-group"><label>Destino</label><input type="text" id="out-dest"></div>
+                </div>
+                <button class="btn" style="background: var(--warning)" onclick="movimiento('OUT')">Guardar Registro</button>
+            </div>
+        </div>
+
+        <div id="page-reportes" class="page">
+            <div class="report-grid">
+                <div class="report-card" onclick="genPDF('GUIAS')"><h3>Guías PDF</h3><p>Historial de movimientos</p></div>
+                <div class="report-card" onclick="genPDF('STOCK')"><h3>Stock PDF</h3><p>Estado actual de bodega</p></div>
+                <div class="report-card" onclick="genExcel()"><h3>Descargar Excel</h3><p>Base de datos completa</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('INV_DATA')) || { productos: [], movs: [] };
+
+        function showPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-'+id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            if(id === 'existencias') renderTable();
+            if(id === 'entradas' || id === 'salidas') updateSelects();
+        }
+
+        function crearProducto() {
+            const cod = document.getElementById('ex-cod').value;
+            const nom = document.getElementById('ex-nom').value;
+            const ini = parseInt(document.getElementById('ex-ini').value) || 0;
+            const min = parseInt(document.getElementById('ex-min').value) || 0;
+
+            if(!cod || !nom) return alert("Faltan datos");
+            db.productos.push({ cod, nom, stock: ini, min });
+            save();
+            // Limpiar campos (CAP 1)
+            ['ex-cod','ex-nom','ex-ini','ex-min'].forEach(id => document.getElementById(id).value = "");
+            renderTable();
+        }
+
+        function movimiento(tipo) {
+            const pfx = tipo === 'IN' ? 'in' : 'out';
+            const cod = document.getElementById(pfx+'-sel').value;
+            const cant = parseInt(document.getElementById(pfx+'-cant').value);
+            
+            let p = db.productos.find(i => i.cod === cod);
+            if(tipo === 'OUT' && p.stock < cant) return alert("Stock Insuficiente");
+
+            p.stock += (tipo === 'IN' ? cant : -cant);
+            db.movs.push({ tipo, cod, cant, guia: document.getElementById(pfx+'-guia').value, fecha: document.getElementById(pfx+'-fecha').value });
+            
+            save();
+            // Limpiar campos (CAP 2 y 3)
+            document.querySelectorAll(`#page-${tipo === 'IN' ? 'entradas':'salidas'} input`).forEach(i => i.value = "");
+            alert("Registrado con éxito");
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tabla-existencias');
+            tbody.innerHTML = db.productos.map(p => `
+                <tr><td>${p.cod}</td><td>${p.nom}</td><td>${p.stock}</td><td>${p.min}</td>
+                <td><span class="status ${p.stock <= p.min ? 'alerta':'optimo'}">${p.stock <= p.min ? 'ALERTA':'ÓPTIMO'}</span></td></tr>
+            `).join('');
+        }
+
+        function updateSelects() {
+            const h = db.productos.map(p => `<option value="${p.cod}">${p.nom}</option>`).join('');
+            document.getElementById('in-sel').innerHTML = h;
+            document.getElementById('out-sel').innerHTML = h;
+        }
+
+        function save() { localStorage.setItem('INV_DATA', JSON.stringify(db)); }
+
+        // FUNCIONES DE REPORTE (CAP 4)
+        function genPDF(tipo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(tipo === 'STOCK' ? "REPORTE DE EXISTENCIAS" : "HISTORIAL DE GUÍAS", 14, 15);
+            const data = tipo === 'STOCK' ? 
+                db.productos.map(p => [p.cod, p.nom, p.stock, p.min]) :
+                db.movs.map(m => [m.fecha, m.tipo, m.cod, m.guia, m.cant]);
+            doc.autoTable({ head: tipo === 'STOCK' ? [['Cod','Mat','Stock','Min']] : [['Fecha','Tipo','Cod','Guia','Cant']], body: data });
+            doc.save(`${tipo}.pdf`);
+        }
+
+        function genExcel() {
+            const ws = XLSX.utils.json_to_sheet(db.productos);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Stock");
+            XLSX.writeFile(wb, "Inventario_Completo.xlsx");
+        }
+
+        showPage('existencias', document.querySelector('.nav-item:nth-child(2)'));
+    </script>
+</body>
+</html>
