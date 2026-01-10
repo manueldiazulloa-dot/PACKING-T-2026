@@ -3,188 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PACKING T - SISTEMA 2026</title>
+    <title>SISTEMA PACKING T - CONTROL TOTAL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --border: #334155; --primary: #2563eb; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 15px; }
+        :root { --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --border: #cbd5e1; --primary: #2563eb; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 20px; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 2px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
-        /* Estilo de Botones Colapsables (como ayer) */
-        .collapsible { background: var(--card); color: var(--text); cursor: pointer; padding: 15px; width: 100%; border: 1px solid var(--border); text-align: left; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
-        .collapsible:hover { background: #2d3748; }
-        .active { border-color: var(--primary); background: #1a202c; }
+        /* Botones de menú estilo ayer */
+        .menu-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-menu { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: #e2e8f0; transition: 0.3s; }
+        .btn-menu.active { background: var(--primary); color: white; }
 
-        .content { padding: 0 18px; display: none; overflow: hidden; background-color: var(--card); border-radius: 0 0 8px 8px; margin-bottom: 10px; border: 1px solid var(--border); border-top: none; }
-        
-        /* Grid de inputs compacto */
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; padding: 15px 0; }
-        input { background: #0f172a; color: white; border: 1px solid var(--primary); padding: 8px; border-radius: 5px; font-size: 14px; }
-        label { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); font-weight: bold; box-sizing: border-box; }
+        label { font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; }
 
-        .btn-action { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .bg-green { background: #10b981; }
-        .bg-red { background: #ef4444; }
+        .btn-save { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .bg-green { background: #10b981; border-bottom: 4px solid #059669; }
+        .bg-red { background: #ef4444; border-bottom: 4px solid #b91c1c; }
 
-        /* Tabla Estilo Ayer */
-        .table-card { background: var(--card); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #1e40af; color: white; padding: 10px; font-size: 13px; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid var(--border); text-align: center; font-weight: bold; }
+        /* Tabla e Informe */
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: var(--primary); color: white; padding: 12px; border: 1px solid #000; }
+        td { padding: 10px; border: 1px solid var(--border); text-align: center; font-weight: bold; }
         
-        .alerta-row { color: #f87171; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.6; } }
-        .oculto { display: none !important; }
+        .stock-alert { background: #fee2e2; border: 2px solid #ef4444; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; display: none; }
+        .oculto { display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <strong>PACKING T - SISTEMA 2026</strong>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-action" style="background:#6366f1; padding:5px 15px;" onclick="exportPDF()">PDF</button>
-            <button class="btn-action" style="background:#22c55e; padding:5px 15px;" onclick="exportExcel()">EXCEL</button>
+        <h2>PACKING T - SISTEMA 2026</h2>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-menu" style="background:#6366f1; color:white;" onclick="exportarPDF()">📄 PDF EXISTENCIAS</button>
+            <button class="btn-menu" style="background:#22c55e; color:white;" onclick="exportarExcel()">📊 EXCEL</button>
         </div>
     </div>
 
-    <button class="collapsible">🔍 AUDITORÍA DE GUÍAS</button>
-    <div class="content">
-        <div class="grid-inputs">
-            <div style="grid-column: span 2;">
-                <select id="selGuia" style="width:100%; padding:10px; background:#0f172a; color:white; border:1px solid var(--primary); border-radius:5px;">
-                    <option value="">-- SELECCIONE GUÍA --</option>
-                </select>
+    <div id="alertaGeneral" class="stock-alert">
+        ⚠️ ATENCIÓN: Hay materiales bajo el stock mínimo. Favor revisar la tabla.
+    </div>
+
+    <div class="menu-btns">
+        <button id="btnE" class="btn-menu active" onclick="cambiarModo('ENTRADA')">📥 ENTRADAS</button>
+        <button id="btnS" class="btn-menu" onclick="cambiarModo('SALIDA')">📤 SALIDAS</button>
+    </div>
+
+    <div class="card">
+        <h3 id="tituloForm">REGISTRO DE ENTRADA</h3>
+        <div class="grid-form">
+            <div><label>CÓDIGO MATERIAL</label><input type="text" id="c_cod" oninput="verificar()"></div>
+            <div id="divNom"><label>NOMBRE MATERIAL</label><input type="text" id="c_nom"></div>
+            <div id="divMin"><label>STOCK MÍNIMO</label><input type="number" id="c_min" value="10"></div>
+            <div><label>N° GUÍA</label><input type="text" id="c_guia"></div>
+            <div><label>PATENTE</label><input type="text" id="c_patente"></div>
+            <div><label>CHOFER</label><input type="text" id="c_chofer"></div>
+            <div>
+                <label id="lblUbicacion">PROCEDENCIA</label>
+                <input type="text" id="c_ubicacion" placeholder="Origen...">
             </div>
-            <button class="btn-action bg-green" style="margin:10px 0;" onclick="alert('Buscando...')">VER DETALLE</button>
+            <div><label>CANTIDAD</label><input type="number" id="c_cant" style="border-width: 3px;"></div>
         </div>
+        <button id="btnGuardar" class="btn-save bg-green" onclick="guardar()">GUARDAR ENTRADA</button>
     </div>
 
-    <button class="collapsible">📥 / 📤 REGISTRAR MOVIMIENTO</button>
-    <div class="content">
-        <div class="grid-inputs">
-            <div><label>Código</label><input type="text" id="c_cod" oninput="validar()" placeholder="Ej: AGR 1"></div>
-            <div id="f_nom"><label>Nombre</label><input type="text" id="c_nom"></div>
-            <div id="f_min"><label>Mínimo</label><input type="number" id="c_min" value="10"></div>
-            <div><label>N° Guía</label><input type="text" id="c_guia"></div>
-            <div><label>Patente</label><input type="text" id="c_patente"></div>
-            <div><label>Chofer</label><input type="text" id="c_chofer"></div>
-            <div><label id="lblProc">Procedencia</label><input type="text" id="c_proc"></div>
-            <div><label>Cantidad</label><input type="number" id="c_cant" style="border-width:2px;"></div>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-action bg-green" onclick="operar('ENTRADA')">REGISTRAR ENTRADA</button>
-            <button class="btn-action bg-red" onclick="operar('SALIDA')">REGISTRAR SALIDA</button>
-        </div>
-    </div>
-
-    <div class="table-card">
-        <div style="padding:10px; background:#1e293b; border-bottom:1px solid var(--border);">📋 EXISTENCIA DE BODEGA</div>
+    <div class="card">
+        <h3>📋 EXISTENCIA ACTUAL DE BODEGA</h3>
         <table>
             <thead>
                 <tr>
                     <th>MATERIAL</th>
                     <th>ENTRADAS</th>
                     <th>SALIDAS</th>
+                    <th>STOCK REAL</th>
                     <th>MÍNIMO</th>
-                    <th>REAL</th>
                 </tr>
             </thead>
             <tbody id="listaBody"></tbody>
         </table>
     </div>
 
-    <div style="height: 200px; margin-top:15px;">
-        <canvas id="chartStock"></canvas>
-    </div>
+    <script>
+        let inventario = JSON.parse(localStorage.getItem('packing_v6_2026')) || [];
+        let modoActual = 'ENTRADA';
 
-<script>
-    let db = JSON.parse(localStorage.getItem('pack_v5_2026')) || [];
-    let chart;
-
-    // Lógica de Acordeón
-    document.querySelectorAll(".collapsible").forEach(btn => {
-        btn.addEventListener("click", function() {
-            this.classList.toggle("active");
-            let content = this.nextElementSibling;
-            content.style.display = content.style.display === "block" ? "none" : "block";
-        });
-    });
-
-    function validar() {
-        const cod = document.getElementById('c_cod').value.trim();
-        const existe = db.find(i => i.codigo === cod);
-        document.getElementById('f_nom').classList.toggle('oculto', !!existe);
-        document.getElementById('f_min').classList.toggle('oculto', !!existe);
-        document.getElementById('lblProc').innerText = existe ? "DESTINO" : "PROCEDENCIA";
-    }
-
-    function operar(tipo) {
-        const cod = document.getElementById('c_cod').value.trim();
-        const q = parseInt(document.getElementById('c_cant').value) || 0;
-        if(!cod || q <= 0) return alert("Complete datos");
-
-        let idx = db.findIndex(i => i.codigo === cod);
-        if(idx !== -1) {
-            if(tipo === 'SALIDA' && db[idx].real < q) return alert("Stock insuficiente");
-            db[idx].entradas += (tipo === 'ENTRADA' ? q : 0);
-            db[idx].salidas += (tipo === 'SALIDA' ? q : 0);
-            db[idx].real += (tipo === 'ENTRADA' ? q : -q);
-        } else {
-            const nom = document.getElementById('c_nom').value;
-            const min = parseInt(document.getElementById('c_min').value) || 0;
-            db.push({codigo:cod, nombre:nom, entradas:q, salidas:0, real:q, minimo:min});
+        function cambiarModo(modo) {
+            modoActual = modo;
+            document.getElementById('btnE').classList.toggle('active', modo === 'ENTRADA');
+            document.getElementById('btnS').classList.toggle('active', modo === 'SALIDA');
+            document.getElementById('tituloForm').innerText = 'REGISTRO DE ' + modo;
+            document.getElementById('btnGuardar').innerText = 'GUARDAR ' + modo;
+            document.getElementById('btnGuardar').className = 'btn-save ' + (modo === 'ENTRADA' ? 'bg-green' : 'bg-red');
+            document.getElementById('lblUbicacion').innerText = (modo === 'ENTRADA' ? 'PROCEDENCIA' : 'DESTINO');
+            verificar();
         }
-        localStorage.setItem('pack_v5_2026', JSON.stringify(db));
-        location.reload();
-    }
 
-    function render() {
-        const b = document.getElementById('listaBody');
-        b.innerHTML = "";
-        db.forEach(i => {
-            const bajo = i.real <= i.minimo;
-            b.innerHTML += `<tr class="${bajo ? 'alerta-row' : ''}">
-                <td>${i.codigo} - ${i.nombre}</td>
-                <td>${i.entradas}</td><td>${i.salidas}</td><td>${i.minimo}</td>
-                <td>${i.real} ${bajo ? '⚠️' : ''}</td>
-            </tr>`;
-        });
-        initChart();
-    }
+        function verificar() {
+            const cod = document.getElementById('c_cod').value.trim();
+            const existe = inventario.find(i => i.codigo === cod);
+            document.getElementById('divNom').classList.toggle('oculto', !!existe);
+            document.getElementById('divMin').classList.toggle('oculto', !!existe);
+        }
 
-    function initChart() {
-        const ctx = document.getElementById('chartStock').getContext('2d');
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: db.map(i => i.codigo),
-                datasets: [{ label: 'Stock', data: db.map(i => i.real), backgroundColor: '#2563eb' }]
-            },
-            options: { maintainAspectRatio: false }
-        });
-    }
+        function guardar() {
+            const cod = document.getElementById('c_cod').value.trim();
+            const q = parseInt(document.getElementById('c_cant').value) || 0;
+            if(!cod || q <= 0) return alert("Faltan datos");
 
-    function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("EXISTENCIAS PACKING T", 14, 15);
-        doc.autoTable({ head: [['Material', 'Stock']], body: db.map(i => [i.codigo, i.real]) });
-        doc.save("Inventario.pdf");
-    }
+            let i = inventario.findIndex(item => item.codigo === cod);
 
-    function exportExcel() {
-        const ws = XLSX.utils.json_to_sheet(db);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Stock");
-        XLSX.writeFile(wb, "Reporte.xlsx");
-    }
+            if(i !== -1) {
+                if(modoActual === 'SALIDA') {
+                    if(inventario[i].real < q) return alert("Stock insuficiente");
+                    inventario[i].salidas += q;
+                    inventario[i].real -= q;
+                } else {
+                    inventario[i].entradas += q;
+                    inventario[i].real += q;
+                }
+            } else {
+                const nom = document.getElementById('c_nom').value;
+                const min = parseInt(document.getElementById('c_min').value) || 0;
+                inventario.push({codigo:cod, nombre:nom, entradas:q, salidas:0, real:q, minimo:min});
+            }
 
-    render();
-</script>
+            localStorage.setItem('packing_v6_2026', JSON.stringify(inventario));
+            location.reload();
+        }
+
+        function render() {
+            const b = document.getElementById('listaBody');
+            let bajoStock = false;
+            b.innerHTML = "";
+            inventario.forEach(i => {
+                const alerta = i.real <= i.minimo;
+                if(alerta) bajoStock = true;
+                b.innerHTML += `<tr style="${alerta ? 'background:#fee2e2' : ''}">
+                    <td>${i.codigo} - ${i.nombre}</td>
+                    <td>${i.entradas}</td>
+                    <td>${i.salidas}</td>
+                    <td style="color:${alerta ? 'red' : 'green'}">${i.real}</td>
+                    <td>${i.minimo}</td>
+                </tr>`;
+            });
+            if(bajoStock) document.getElementById('alertaGeneral').style.display = 'block';
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("INFORME DE EXISTENCIAS - PACKING T", 14, 15);
+            doc.autoTable({
+                head: [['Material', 'Entradas', 'Salidas', 'Stock Real']],
+                body: inventario.map(i => [i.codigo + " " + i.nombre, i.entradas, i.salidas, i.real])
+            });
+            doc.save("Existencias_PackingT.pdf");
+        }
+
+        function exportarExcel() {
+            const ws = XLSX.utils.json_to_sheet(inventario);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Bodega");
+            XLSX.writeFile(wb, "Reporte_Inventario.xlsx");
+        }
+
+        render();
+    </script>
 </body>
 </html>
