@@ -3,201 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA PACKING T - PRO 2026</title>
+    <title>SISTEMA PACKING T - 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
-        :root { --primary: #2563eb; --success: #10b981; --danger: #ef4444; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 10px; font-size: 13px; }
-        .dashboard { display: grid; grid-template-columns: 350px 1fr; gap: 10px; max-width: 1400px; margin: auto; }
-        .card { background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        h3 { margin-top: 0; font-size: 15px; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-        .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        input, select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; background: var(--card); color: var(--text); font-size: 12px; }
-        .full-w { grid-column: span 2; }
-        .btn-group { display: flex; gap: 5px; margin-top: 10px; }
-        .btn { flex: 1; padding: 8px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
-        .btn-in { background: var(--success); }
-        .btn-out { background: var(--danger); }
-        .table-container { height: 300px; overflow-y: auto; margin-top: 10px; border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { position: sticky; top: 0; background: var(--primary); color: white; padding: 8px; }
-        td { padding: 6px; border-bottom: 1px solid #e2e8f0; text-align: center; }
-        .low-stock { background: #fee2e2; color: #b91c1c; font-weight: bold; }
-        .chart-container { height: 200px; margin-top: 10px; }
-        .oculto { display: none; }
+        :root { --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --border: #cbd5e1; --primary: #2563eb; }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --border: #334155; }
+        
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 20px; transition: 0.3s; }
+        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 2px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        h2, h3 { color: var(--primary); margin-top: 0; }
+        
+        /* Diseño de inputs como el de ayer */
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 2px solid var(--primary) !important; background-color: var(--card); color: var(--text); font-size: 15px; font-weight: bold; box-sizing: border-box; }
+        
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-in { background: #10b981; border-bottom: 4px solid #059669; }
+        .btn-out { background: #ef4444; border-bottom: 4px solid #b91c1c; }
+        .btn-pdf { background: #6366f1; border-bottom: 4px solid #4338ca; }
+        .btn-xl { background: #22c55e; border-bottom: 4px solid #16a34a; }
+        .btn:active { transform: translateY(4px); border-bottom: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: var(--primary); color: white; padding: 12px; border: 1px solid #000; }
+        td { padding: 10px; border: 1px solid var(--border); text-align: center; font-weight: bold; }
+        
+        .alerta { color: #ef4444; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+        .oculto { display: none !important; }
+        
+        .chart-box { max-height: 250px; margin-top: 20px; }
     </style>
 </head>
 <body data-theme="light">
 
-<div style="display:flex; justify-content:space-between; padding: 0 20px 10px;">
-    <strong>PACKING T - DASHBOARD LOGÍSTICO 2026</strong>
-    <button onclick="document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')" style="cursor:pointer">🌓 MODO</button>
-</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>PACKING T - SISTEMA INTEGRAL 2026</h2>
+        <button class="btn" style="background:#4b5563;" onclick="toggleTheme()">🌓 MODO</button>
+    </div>
 
-<div class="dashboard">
     <div class="card">
-        <h3>📦 REGISTRO DE MOVIMIENTO</h3>
-        <div class="form-group">
-            <div class="full-w">
-                <label>Código Material</label>
-                <input type="text" id="c_cod" oninput="validar()" placeholder="Buscar o crear...">
+        <h3>📥 / 📤 REGISTRO DE ENTRADAS Y SALIDAS</h3>
+        <div class="grid-inputs">
+            <div>
+                <label>CÓDIGO MATERIAL</label>
+                <input type="text" id="c_cod" oninput="comprobar()" placeholder="Ej: AGR 1">
             </div>
-            <div id="extraFields" class="full-w">
-                <label>Nombre</label><input type="text" id="c_nom">
-                <label>Stock Mínimo</label><input type="number" id="c_min" value="10">
+            <div id="extraFields">
+                <label>NOMBRE</label><input type="text" id="c_nom">
+                <label>MINIMO</label><input type="number" id="c_min" value="10">
             </div>
-            <div class="full-w"><hr></div>
-            <div><label>N° Guía</label><input type="text" id="c_guia"></div>
-            <div><label>Patente</label><input type="text" id="c_patente"></div>
-            <div><label>Chofer</label><input type="text" id="c_chofer"></div>
-            <div><label id="lblProcedencia">Procedencia/Destino</label><input type="text" id="c_proc"></div>
-            <div class="full-w">
-                <label style="font-weight:bold; color:var(--primary)">CANTIDAD</label>
-                <input type="number" id="c_cant" style="border: 2px solid var(--primary)">
+            <div><label>N° GUÍA</label><input type="text" id="c_guia"></div>
+            <div><label>PATENTE</label><input type="text" id="c_patente"></div>
+            <div><label>CHOFER</label><input type="text" id="c_chofer"></div>
+            <div><label id="lblProc">PROCEDENCIA</label><input type="text" id="c_proc"></div>
+            <div>
+                <label style="color:var(--primary)">CANTIDAD</label>
+                <input type="number" id="c_cant" style="border-width: 3px !important;">
             </div>
         </div>
-        <div class="btn-group">
-            <button class="btn btn-in" onclick="operacion('ENTRADA')">📥 REGISTRAR ENTRADA</button>
-            <button class="btn btn-out" onclick="operacion('SALIDA')">📤 REGISTRAR SALIDA</button>
-        </div>
-        
-        <div class="chart-container">
-            <canvas id="stockChart"></canvas>
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <button class="btn btn-in" style="flex:1" onclick="operacion('ENTRADA')">➕ REGISTRAR ENTRADA</button>
+            <button class="btn btn-out" style="flex:1" onclick="operacion('SALIDA')">➖ REGISTRAR SALIDA</button>
         </div>
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center">
-            <h3>📋 INVENTARIO Y EXISTENCIAS</h3>
-            <div style="display:flex; gap:5px">
-                <button class="btn" style="background:#6366f1" onclick="exportPDF()">📄 PDF</button>
-                <button class="btn" style="background:#22c55e" onclick="exportExcel()">📊 EXCEL</button>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>📋 EXISTENCIA ACTUAL EN BODEGA</h3>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-pdf" onclick="exportPDF()">📄 PDF</button>
+                <button class="btn btn-xl" onclick="exportExcel()">📊 EXCEL</button>
             </div>
         </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>MATERIAL</th>
+                    <th>ENTRADAS</th>
+                    <th>SALIDAS</th>
+                    <th>STOCK REAL</th>
+                    <th>ESTADO</th>
+                </tr>
+            </thead>
+            <tbody id="listaBody"></tbody>
+        </table>
         
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>CÓDIGO - MATERIAL</th>
-                        <th>ENTRADAS</th>
-                        <th>SALIDAS</th>
-                        <th>STOCK REAL</th>
-                        <th>ESTADO</th>
-                    </tr>
-                </thead>
-                <tbody id="listaBody"></tbody>
-            </table>
-        </div>
-
-        <h3>🔍 ÚLTIMOS MOVIMIENTOS (AUDITORÍA)</h3>
-        <div class="table-container" style="height:150px;">
-            <table style="background:#f1f5f9; color:#000">
-                <thead><tr><th>FECHA</th><th>GUÍA</th><th>MAT.</th><th>CANT.</th><th>CHOFER</th><th>TIPO</th></tr></thead>
-                <tbody id="historialBody"></tbody>
-            </table>
+        <div class="chart-box">
+            <canvas id="graficoStock"></canvas>
         </div>
     </div>
-</div>
 
-<script>
-    let inventario = JSON.parse(localStorage.getItem('pack_v3_2026')) || [];
-    let historial = JSON.parse(localStorage.getItem('pack_hist_2026')) || [];
-    let chart;
+    <script>
+        let inventario = JSON.parse(localStorage.getItem('pack_v4_2026')) || [];
+        let miGrafico;
 
-    function validar() {
-        const cod = document.getElementById('c_cod').value.trim();
-        const existe = inventario.find(i => i.codigo === cod);
-        document.getElementById('extraFields').classList.toggle('oculto', !!existe);
-        document.getElementById('lblProcedencia').innerText = existe ? "Procedencia/Destino" : "Origen Inicial";
-    }
-
-    function operacion(tipo) {
-        const cod = document.getElementById('c_cod').value.trim();
-        const cant = parseInt(document.getElementById('c_cant').value) || 0;
-        const guia = document.getElementById('c_guia').value;
-        const patente = document.getElementById('c_patente').value;
-        const chofer = document.getElementById('c_chofer').value;
-        const proc = document.getElementById('c_proc').value;
-
-        if(!cod || cant <= 0) return alert("Complete código y cantidad");
-
-        let idx = inventario.findIndex(i => i.codigo === cod);
-        if(idx !== -1) {
-            if(tipo === 'SALIDA' && inventario[idx].real < cant) return alert("Stock insuficiente");
-            inventario[idx].entradas += (tipo === 'ENTRADA' ? cant : 0);
-            inventario[idx].salidas += (tipo === 'SALIDA' ? cant : 0);
-            inventario[idx].real += (tipo === 'ENTRADA' ? cant : -cant);
-        } else {
-            const nom = document.getElementById('c_nom').value;
-            const min = parseInt(document.getElementById('c_min').value) || 0;
-            inventario.push({codigo:cod, nombre:nom, entradas:cant, salidas:0, real:cant, minimo:min});
+        function toggleTheme() {
+            const b = document.body;
+            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        historial.unshift({fecha: new Date().toLocaleString(), guia, cod, cant, chofer, patente, proc, tipo});
-        if(historial.length > 50) historial.pop();
+        function comprobar() {
+            const cod = document.getElementById('c_cod').value.trim();
+            const existe = inventario.find(i => i.codigo === cod);
+            document.getElementById('extraFields').classList.toggle('oculto', !!existe);
+            document.getElementById('lblProc').innerText = existe ? "DESTINO/ORIGEN" : "PROCEDENCIA";
+        }
 
-        localStorage.setItem('pack_v3_2026', JSON.stringify(inventario));
-        localStorage.setItem('pack_hist_2026', JSON.stringify(historial));
-        location.reload();
-    }
+        function operacion(tipo) {
+            const cod = document.getElementById('c_cod').value.trim();
+            const q = parseInt(document.getElementById('c_cant').value) || 0;
+            if(!cod || q <= 0) return alert("Por favor complete Código y Cantidad");
 
-    function render() {
-        const b = document.getElementById('listaBody');
-        b.innerHTML = "";
-        inventario.forEach(i => {
-            const low = i.real <= i.minimo;
-            b.innerHTML += `<tr class="${low ? 'low-stock' : ''}">
-                <td>${i.codigo} - ${i.nombre}</td>
-                <td>${i.entradas}</td><td>${i.salidas}</td>
-                <td>${i.real}</td><td>${low ? 'REABASTECER ⚠️' : 'OK ✅'}</td>
-            </tr>`;
-        });
+            let i = inventario.findIndex(item => item.codigo === cod);
+            if (i !== -1) {
+                if(tipo === 'SALIDA' && inventario[i].real < q) return alert("¡ERROR! Stock insuficiente.");
+                inventario[i].entradas += (tipo === 'ENTRADA' ? q : 0);
+                inventario[i].salidas += (tipo === 'SALIDA' ? q : 0);
+                inventario[i].real += (tipo === 'ENTRADA' ? q : -q);
+            } else {
+                const nom = document.getElementById('c_nom').value;
+                const min = parseInt(document.getElementById('c_min').value) || 0;
+                inventario.push({ codigo: cod, nombre: nom, entradas: q, salidas: 0, real: q, minimo: min });
+            }
+            
+            localStorage.setItem('pack_v4_2026', JSON.stringify(inventario));
+            location.reload();
+        }
 
-        const h = document.getElementById('historialBody');
-        historial.forEach(entry => {
-            h.innerHTML += `<tr>
-                <td>${entry.fecha}</td><td>${entry.guia}</td><td>${entry.cod}</td>
-                <td>${entry.cant}</td><td>${entry.chofer}</td>
-                <td style="color:${entry.tipo==='ENTRADA'?'green':'red'}">${entry.tipo}</td>
-            </tr>`;
-        });
-        initChart();
-    }
+        function render() {
+            const b = document.getElementById('listaBody');
+            b.innerHTML = "";
+            inventario.forEach(item => {
+                const bajo = item.real <= item.minimo;
+                b.innerHTML += `<tr>
+                    <td>${item.codigo} - ${item.nombre}</td>
+                    <td>${item.entradas}</td>
+                    <td>${item.salidas}</td>
+                    <td class="${bajo ? 'alerta' : ''}">${item.real}</td>
+                    <td>${bajo ? 'BAJO STOCK ⚠️' : 'OK ✅'}</td>
+                </tr>`;
+            });
+            actualizarGrafico();
+        }
 
-    function initChart() {
-        const ctx = document.getElementById('stockChart').getContext('2d');
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: inventario.map(i => i.codigo),
-                datasets: [{ label: 'Stock Real', data: inventario.map(i => i.real), backgroundColor: '#2563eb' }]
-            },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    }
+        function actualizarGrafico() {
+            const ctx = document.getElementById('graficoStock').getContext('2d');
+            if(miGrafico) miGrafico.destroy();
+            miGrafico = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: inventario.map(i => i.codigo),
+                    datasets: [{
+                        label: 'Stock Actual',
+                        data: inventario.map(i => i.real),
+                        backgroundColor: '#2563eb'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
 
-    function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("INFORME DE EXISTENCIAS - PACKING T", 14, 15);
-        doc.autoTable({ head: [['Material', 'Entradas', 'Salidas', 'Stock']], body: inventario.map(i => [i.codigo + " " + i.nombre, i.entradas, i.salidas, i.real]) });
-        doc.save("Existencias_2026.pdf");
-    }
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("PACKING T - REPORTE DE INVENTARIO", 14, 15);
+            doc.autoTable({
+                head: [['Material', 'Entradas', 'Salidas', 'Stock Real']],
+                body: inventario.map(i => [i.codigo + " " + i.nombre, i.entradas, i.salidas, i.real])
+            });
+            doc.save("Inventario_PackingT.pdf");
+        }
 
-    function exportExcel() {
-        const ws = XLSX.utils.json_to_sheet(inventario);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-        XLSX.writeFile(wb, "Inventario_PackingT.xlsx");
-    }
+        function exportExcel() {
+            const ws = XLSX.utils.json_to_sheet(inventario);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Bodega");
+            XLSX.writeFile(wb, "Reporte_PackingT.xlsx");
+        }
 
-    render();
-</script>
+            render();
+    </script>
 </body>
 </html>
