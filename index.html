@@ -3,95 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packing T - Inventario 2026</title>
+    <title>SISTEMA INTEGRAL PACKING T 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
-        :root { --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --border: #cbd5e1; --in-bg: #ffffff; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --border: #334155; --in-bg: #334155; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 20px; }
-        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 2px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #2563eb !important; background-color: var(--in-bg) !important; color: var(--text) !important; font-size: 16px; font-weight: bold; box-sizing: border-box; }
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; border-bottom: 4px solid #1e40af; background: #2563eb; color: white; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-        .btn:active { border-bottom: 0; transform: translateY(4px); }
-        .auditoria-box { background: var(--in-bg); padding: 15px; border: 2px solid #2563eb; color: #38bdf8 !important; border-radius: 8px; font-weight: bold; margin-top: 10px; }
-        .oculto { display: none !important; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #1e40af; color: white; padding: 12px; border: 1px solid #000; }
-        td { padding: 12px; border: 1px solid var(--border); text-align: center; font-weight: bold; }
+        :root { --bg: #f0f2f5; --card: #ffffff; --text: #1e293b; --border: #cbd5e1; }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
+        
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; transition: 0.3s; }
+        .container { max-width: 1000px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+        
+        h2, h3 { margin-top: 0; color: #2563eb; }
+        [data-theme="dark"] h2, [data-theme="dark"] h3 { color: #38bdf8; }
+
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text); box-sizing: border-box; font-size: 16px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-in { background: #10b981; border-bottom: 4px solid #059669; }
+        .btn-out { background: #ef4444; border-bottom: 4px solid #b91c1c; }
+        .btn-pdf { background: #6366f1; border-bottom: 4px solid #4338ca; }
+        .btn-xl { background: #22c55e; border-bottom: 4px solid #16a34a; }
+        .btn:active { transform: translateY(2px); border-bottom: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--card); }
+        th { background: #2563eb; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid var(--border); }
+        
+        .alert-low { color: #ef4444; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        .oculto { display: none; }
+        .header-tools { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     </style>
 </head>
 <body data-theme="light">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>PACKING T - SISTEMA 2026</h2>
-        <button class="btn" style="width:auto; background:#4b5563; border-bottom-color:#1f2937;" onclick="document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">🌓 MODO</button>
+
+<div class="container">
+    <div class="header-tools">
+        <h2>📦 PACKING T - CONTROL 2026</h2>
+        <button onclick="toggleTheme()" class="btn" style="background:#475569; width:auto; padding:8px 15px;">🌓 MODO</button>
     </div>
 
     <div class="card">
         <h3>🔍 AUDITORÍA DE GUÍAS</h3>
-        <select id="selGuia" onchange="const g=document.getElementById('selGuia').value; document.getElementById('resAud').innerHTML=(g==='1')?'ENTRADA: 3000 ESQUINEROS DE CARTON 2 MTS':'Seleccione guía...'">
-            <option value="">-- SELECCIONE --</option>
-            <option value="1">Guía: 234567</option>
-        </select>
-        <div id="resAud" class="auditoria-box">Seleccione una guía para ver el detalle...</div>
-    </div>
-
-    <div class="card" style="max-width: 500px; margin: auto;">
-        <h3 style="text-align: center;">📥 REGISTRO DE MATERIAL</h3>
-        <label>CÓDIGO</label>
-        <input type="text" id="c_cod" oninput="comprobar()" placeholder="Ej: AGR 1">
-        <div id="extraFields">
-            <label>NOMBRE MATERIAL</label>
-            <input type="text" id="c_nom">
-            <label>STOCK MÍNIMO</label>
-            <input type="number" id="c_min">
+        <div class="grid-form">
+            <select id="selGuia" onchange="actualizarAuditoria()">
+                <option value="">-- SELECCIONE GUÍA --</option>
+                <option value="234567">Guía: 234567 (Entrada)</option>
+                <option value="987654">Guía: 987654 (Salida)</option>
+            </select>
+            <button class="btn btn-pdf" onclick="imprimirAuditoria()">📄 IMPRIMIR GUÍA (PDF)</button>
         </div>
-        <label id="l_cant">STOCK INICIAL / CANTIDAD</label>
-        <input type="number" id="c_cant">
-        <label>FECHA</label>
-        <input type="text" value="10/01/2026" readonly style="background:#e2e8f0 !important; color:#000 !important;">
-        <button class="btn" style="background:#10b981; border-bottom-color:#059669;" onclick="guardar()">💾 GUARDAR</button>
+        <div id="resAud" style="margin-top:15px; padding:10px; border-left:4px solid #2563eb; background:rgba(37,99,235,0.1);">
+            Seleccione una guía para ver detalles...
+        </div>
     </div>
 
     <div class="card">
-        <h3>📋 EXISTENCIA DE BODEGA</h3>
-        <table>
-            <thead><tr><th>MATERIAL</th><th>ENTRADAS</th><th>SALIDAS</th><th>MÍNIMO</th><th>REAL</th></tr></thead>
+        <h3>📥 / 📤 MOVIMIENTOS DE BODEGA</h3>
+        <div class="grid-form">
+            <div>
+                <label>Código del Material</label>
+                <input type="text" id="c_cod" oninput="chequearExistencia()" placeholder="Ej: AGR 1">
+            </div>
+            <div id="fieldNom">
+                <label>Nombre</label>
+                <input type="text" id="c_nom">
+            </div>
+            <div id="fieldMin">
+                <label>Stock Mínimo</label>
+                <input type="number" id="c_min" value="10">
+            </div>
+            <div>
+                <label id="lblCant">Cantidad</label>
+                <input type="number" id="c_cant" placeholder="0">
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-in" onclick="procesar('ENTRADA')">➕ ENTRADA</button>
+            <button class="btn btn-out" onclick="procesar('SALIDA')">➖ SALIDA</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>📋 EXISTENCIA ACTUAL</h3>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-pdf" onclick="exportarPDF()">📄 PDF</button>
+                <button class="btn btn-xl" onclick="exportarExcel()">📊 EXCEL</button>
+            </div>
+        </div>
+        <table id="tablaInventario">
+            <thead>
+                <tr>
+                    <th>MATERIAL</th>
+                    <th>ENTRADAS</th>
+                    <th>SALIDAS</th>
+                    <th>STOCK REAL</th>
+                </tr>
+            </thead>
             <tbody id="listaBody"></tbody>
         </table>
     </div>
+</div>
 
-    <script>
-        let inventario = JSON.parse(localStorage.getItem('pack_final_v2026')) || [];
-        function comprobar() {
-            const cod = document.getElementById('c_cod').value.trim();
-            const existe = inventario.find(i => i.codigo === cod);
-            document.getElementById('extraFields').classList.toggle('oculto', !!existe && cod !== "");
-            document.getElementById('l_cant').innerText = (existe && cod !== "") ? "CANTIDAD A SUMAR" : "STOCK INICIAL";
+<script>
+    let db = JSON.parse(localStorage.getItem('db_packing_2026')) || [];
+
+    function toggleTheme() {
+        const b = document.body;
+        b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    function chequearExistencia() {
+        const cod = document.getElementById('c_cod').value.trim();
+        const existe = db.find(i => i.codigo === cod);
+        
+        if(existe) {
+            document.getElementById('fieldNom').classList.add('oculto');
+            document.getElementById('fieldMin').classList.add('oculto');
+            document.getElementById('lblCant').innerText = "CANTIDAD A MOVER";
+        } else {
+            document.getElementById('fieldNom').classList.remove('oculto');
+            document.getElementById('fieldMin').classList.remove('oculto');
+            document.getElementById('lblCant').innerText = "STOCK INICIAL";
         }
-        function guardar() {
-            const cod = document.getElementById('c_cod').value.trim();
-            const q = parseInt(document.getElementById('c_cant').value) || 0;
-            if(!cod) return;
-            let i = inventario.findIndex(item => item.codigo === cod);
-            if (i !== -1) {
-                inventario[i].entradas = parseInt(inventario[i].entradas) + q;
-                inventario[i].real = parseInt(inventario[i].real) + q;
+    }
+
+    function procesar(tipo) {
+        const cod = document.getElementById('c_cod').value.trim();
+        const cant = parseInt(document.getElementById('c_cant').value) || 0;
+        if(!cod || cant <= 0) return alert("Ingrese código y cantidad válida");
+
+        let i = db.findIndex(item => item.codigo === cod);
+
+        if(i !== -1) {
+            if(tipo === 'ENTRADA') {
+                db[i].entradas += cant;
+                db[i].real += cant;
             } else {
-                const nom = document.getElementById('c_nom').value;
-                const min = parseInt(document.getElementById('c_min').value) || 0;
-                inventario.push({ codigo: cod, nombre: nom, entradas: q, salidas: 0, minimo: min, real: q });
+                if(db[i].real < cant) return alert("¡Error! Stock insuficiente para esta salida.");
+                db[i].salidas += cant;
+                db[i].real -= cant;
             }
-            localStorage.setItem('pack_final_v2026', JSON.stringify(inventario));
-            location.reload();
-        }
-        function render() {
-            const b = document.getElementById('listaBody');
-            b.innerHTML = "";
-            inventario.forEach(item => {
-                const bajo = item.real <= item.minimo;
-                b.innerHTML += `<tr><td>${item.codigo} - ${item.nombre}</td><td>${item.entradas}</td><td>${item.salidas}</td><td>${item.minimo}</td><td style="color:${bajo ? 'red' : 'green'}">${item.real} ${bajo ? '⚠️' : ''}</td></tr>`;
+        } else {
+            // Nuevo Material
+            const nom = document.getElementById('c_nom').value || "S/N";
+            const min = parseInt(document.getElementById('c_min').value) || 0;
+            db.push({
+                codigo: cod, nombre: nom, 
+                entradas: tipo === 'ENTRADA' ? cant : 0,
+                salidas: tipo === 'SALIDA' ? cant : 0,
+                minimo: min, real: cant
             });
         }
+        
+        saveAndReload();
+    }
+
+    function saveAndReload() {
+        localStorage.setItem('db_packing_2026', JSON.stringify(db));
         render();
-    </script>
+        document.getElementById('c_cod').value = "";
+        document.getElementById('c_cant').value = "";
+        chequearExistencia();
+    }
+
+    function render() {
+        const body = document.getElementById('listaBody');
+        body.innerHTML = "";
+        db.forEach(item => {
+            const isLow = item.real <= item.minimo;
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${item.codigo}</strong> - ${item.nombre}</td>
+                    <td>${item.entradas}</td>
+                    <td>${item.salidas}</td>
+                    <td class="${isLow ? 'alert-low' : ''}">${item.real} ${isLow ? '⚠️' : ''}</td>
+                </tr>`;
+        });
+    }
+
+    // --- FUNCIONES DE EXPORTACIÓN ---
+
+    function exportarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("PACKING T - INFORME DE EXISTENCIAS 2026", 14, 15);
+        
+        const rows = db.map(i => [i.codigo + " " + i.nombre, i.entradas, i.salidas, i.real]);
+        doc.autoTable({
+            head: [['Material', 'Entradas', 'Salidas', 'Stock Real']],
+            body: rows,
+            startY: 25
+        });
+        doc.save("Existencias_PackingT.pdf");
+    }
+
+    function exportarExcel() {
+        const worksheet = XLSX.utils.json_to_sheet(db);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Inventario");
+        XLSX.writeFile(workbook, "Inventario_PackingT_2026.xlsx");
+    }
+
+    function actualizarAuditoria() {
+        const g = document.getElementById('selGuia').value;
+        const box = document.getElementById('resAud');
+        if(g === '234567') box.innerHTML = "<strong>TIPO: ENTRADA</strong><br>Material: ESQUINEROS CARTÓN<br>Cantidad: 3000<br>Origen: Proveedor Central";
+        else if(g === '987654') box.innerHTML = "<strong>TIPO: SALIDA</strong><br>Material: CINTA EMBALAJE<br>Cantidad: 50<br>Destino: Línea de Producción 2";
+        else box.innerHTML = "Seleccione una guía...";
+    }
+
+    function imprimirAuditoria() {
+        const g = document.getElementById('selGuia').value;
+        if(!g) return alert("Seleccione una guía");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("AUDITORÍA DE GUÍA: " + g, 14, 20);
+        doc.text(document.getElementById('resAud').innerText, 14, 40);
+        doc.save("Auditoria_Guia_" + g + ".pdf");
+    }
+
+    render();
+</script>
 </body>
 </html>
