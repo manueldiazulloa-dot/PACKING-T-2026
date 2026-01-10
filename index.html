@@ -12,8 +12,7 @@
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
         .sidebar { width: 240px; background: var(--sidebar); border-right: 1px solid #334155; padding: 20px; display: flex; flex-direction: column; }
-        .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .logo span { color: var(--primary); font-size: 12px; }
+        .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; color: var(--primary); }
         
         .nav-item { padding: 12px; color: #94a3b8; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
@@ -22,52 +21,51 @@
         .page { display: none; }
         .page.active { display: block; }
 
-        /* Formularios más pequeños como pediste */
-        .form-container { background: var(--card); padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 20px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-container { background: var(--card); padding: 20px; border-radius: 12px; max-width: 550px; margin: 0 auto 20px; border: 1px solid #334155; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .full { grid-column: span 2; }
         
-        input, select { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; width: 100%; box-sizing: border-box; }
-        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        input, select { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; width: 100%; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary); }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; display: block; font-weight: bold; }
 
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         
-        /* Estilo de tabla CAP 1 */
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
-        th { background: #1e293b; padding: 12px; text-align: left; font-size: 12px; color: #94a3b8; }
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+        th { background: #1e293b; padding: 12px; text-align: left; font-size: 11px; color: #94a3b8; text-transform: uppercase; }
         td { padding: 12px; border-bottom: 1px solid #334155; font-size: 14px; }
         
         .status { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .optimo { background: #064e3b; color: #10b981; }
         .alerta { background: #450a0a; color: #ef4444; }
 
-        .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .report-card { background: var(--card); padding: 20px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.3s; border: 1px solid transparent; }
+        .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .report-card { background: var(--card); padding: 25px; border-radius: 12px; cursor: pointer; text-align: center; border: 1px solid #334155; transition: 0.3s; }
         .report-card:hover { border-color: var(--primary); background: #26334d; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo">📦 INV-PRO <span>v1.1</span></div>
-        <div class="nav-item active" onclick="showPage('dashboard', this)">📊 Dashboard</div>
-        <div class="nav-item" onclick="showPage('existencias', this)">📦 Existencias</div>
+        <div class="logo">INV-PRO v1.1</div>
+        <div class="nav-item active" onclick="showPage('existencias', this)">📦 Existencias</div>
         <div class="nav-item" onclick="showPage('entradas', this)">⬇️ Entradas</div>
         <div class="nav-item" onclick="showPage('salidas', this)">⬆️ Salidas</div>
         <div class="nav-item" onclick="showPage('reportes', this)">📋 Reportes</div>
     </div>
 
     <div class="main">
-        <div id="page-existencias" class="page">
+        <div id="page-existencias" class="page active">
             <div class="form-container">
-                <h3 style="margin-top:0">Nuevo Producto</h3>
+                <h3 style="margin:0 0 15px 0">Nuevo Material</h3>
                 <div class="form-grid">
-                    <div class="input-group full"><label>Código</label><input type="text" id="ex-cod"></div>
-                    <div class="input-group full"><label>Material</label><input type="text" id="ex-nom"></div>
-                    <div class="input-group"><label>Stock Inicial</label><input type="number" id="ex-ini"></div>
-                    <div class="input-group"><label>Stock Mínimo</label><input type="number" id="ex-min"></div>
+                    <div class="input-group full"><label>Código</label><input type="text" id="ex-cod" placeholder="Ej: AGR-1"></div>
+                    <div class="input-group full"><label>Nombre Material</label><input type="text" id="ex-nom"></div>
+                    <div class="input-group"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div>
+                    <div class="input-group"><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div>
                 </div>
-                <button class="btn" style="background: var(--primary)" onclick="crearProducto()">Guardar Registro</button>
+                <button class="btn" style="background: var(--primary)" onclick="crearProducto()">GUARDAR MATERIAL</button>
             </div>
             <table>
                 <thead><tr><th>CÓDIGO</th><th>MATERIAL</th><th>STOCK REAL</th><th>MÍNIMO</th><th>ESTADO</th></tr></thead>
@@ -77,124 +75,157 @@
 
         <div id="page-entradas" class="page">
             <div class="form-container">
-                <h3 style="color: var(--success)">⬇️ Registrar Entrada</h3>
+                <h3 style="color: var(--success); margin:0 0 15px 0">⬇️ Registrar Entrada</h3>
                 <div class="form-grid">
-                    <div class="input-group full"><label>Producto</label><select id="in-sel"></select></div>
-                    <div class="input-group"><label>Fecha</label><input type="date" id="in-fecha"></div>
+                    <div class="input-group full"><label>Seleccionar Producto</label><select id="in-sel"></select></div>
                     <div class="input-group"><label>N° Guía</label><input type="text" id="in-guia"></div>
+                    <div class="input-group"><label>Fecha</label><input type="date" id="in-fecha"></div>
                     <div class="input-group full"><label>Cantidad</label><input type="number" id="in-cant"></div>
-                    <div class="input-group full"><label>Chofer</label><input type="text" id="in-chofer"></div>
+                    <div class="input-group full"><label>Nombre Chofer</label><input type="text" id="in-chofer"></div>
                     <div class="input-group"><label>Patente</label><input type="text" id="in-pat"></div>
                     <div class="input-group"><label>Procedencia</label><input type="text" id="in-proc"></div>
                 </div>
-                <button class="btn" style="background: var(--success)" onclick="movimiento('IN')">Guardar Registro</button>
+                <button class="btn" style="background: var(--success)" onclick="registrarMov('IN')">ACEPTAR ENTRADA</button>
             </div>
         </div>
 
         <div id="page-salidas" class="page">
             <div class="form-container">
-                <h3 style="color: var(--warning)">⬆️ Registrar Salida</h3>
+                <h3 style="color: var(--warning); margin:0 0 15px 0">⬆️ Registrar Salida</h3>
                 <div class="form-grid">
-                    <div class="input-group full"><label>Producto</label><select id="out-sel"></select></div>
-                    <div class="input-group"><label>Fecha</label><input type="date" id="out-fecha"></div>
+                    <div class="input-group full"><label>Seleccionar Producto</label><select id="out-sel"></select></div>
                     <div class="input-group"><label>N° Guía</label><input type="text" id="out-guia"></div>
+                    <div class="input-group"><label>Fecha</label><input type="date" id="out-fecha"></div>
                     <div class="input-group full"><label>Cantidad</label><input type="number" id="out-cant"></div>
-                    <div class="input-group full"><label>Chofer</label><input type="text" id="out-chofer"></div>
+                    <div class="input-group full"><label>Chofer Responsable</label><input type="text" id="out-chofer"></div>
                     <div class="input-group"><label>Patente</label><input type="text" id="out-pat"></div>
                     <div class="input-group"><label>Destino</label><input type="text" id="out-dest"></div>
                 </div>
-                <button class="btn" style="background: var(--warning)" onclick="movimiento('OUT')">Guardar Registro</button>
+                <button class="btn" style="background: var(--warning)" onclick="registrarMov('OUT')">ACEPTAR SALIDA</button>
             </div>
         </div>
 
         <div id="page-reportes" class="page">
+            <h2 style="margin-bottom:20px">Panel de Reportes</h2>
             <div class="report-grid">
-                <div class="report-card" onclick="genPDF('GUIAS')"><h3>Guías PDF</h3><p>Historial de movimientos</p></div>
-                <div class="report-card" onclick="genPDF('STOCK')"><h3>Stock PDF</h3><p>Estado actual de bodega</p></div>
-                <div class="report-card" onclick="genExcel()"><h3>Descargar Excel</h3><p>Base de datos completa</p></div>
+                <div class="report-card" onclick="descargarPDF('GUIAS')"><h1 style="margin:0">📄</h1><h3>Guías PDF</h3></div>
+                <div class="report-card" onclick="descargarPDF('STOCK')"><h1 style="margin:0">📋</h1><h3>Stock PDF</h3></div>
+                <div class="report-card" onclick="descargarExcel()"><h1 style="margin:0">📊</h1><h3>Excel</h3></div>
             </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('INV_DATA')) || { productos: [], movs: [] };
+        // Base de datos local
+        let db = JSON.parse(localStorage.getItem('PACKING_DATABASE_2026')) || { productos: [], movs: [] };
 
         function showPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-'+id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            if(id === 'existencias') renderTable();
-            if(id === 'entradas' || id === 'salidas') updateSelects();
+            
+            if(id === 'existencias') renderExistencias();
+            if(id === 'entradas' || id === 'salidas') actualizarSelectores();
         }
 
+        // CAP 1: Crear producto sin duplicados
         function crearProducto() {
-            const cod = document.getElementById('ex-cod').value;
-            const nom = document.getElementById('ex-nom').value;
+            const cod = document.getElementById('ex-cod').value.trim();
+            const nom = document.getElementById('ex-nom').value.trim();
             const ini = parseInt(document.getElementById('ex-ini').value) || 0;
             const min = parseInt(document.getElementById('ex-min').value) || 0;
 
-            if(!cod || !nom) return alert("Faltan datos");
+            if(!cod || !nom) return alert("Por favor, ingrese Código y Nombre.");
+            
+            // Validar duplicado
+            if(db.productos.some(p => p.cod === cod)) return alert("ERROR: Este código ya existe.");
+
             db.productos.push({ cod, nom, stock: ini, min });
-            save();
-            // Limpiar campos (CAP 1)
+            guardarDB();
+            
+            // Limpiar campos CAP 1
             ['ex-cod','ex-nom','ex-ini','ex-min'].forEach(id => document.getElementById(id).value = "");
-            renderTable();
+            renderExistencias();
+            alert("Material creado con éxito.");
         }
 
-        function movimiento(tipo) {
-            const pfx = tipo === 'IN' ? 'in' : 'out';
-            const cod = document.getElementById(pfx+'-sel').value;
-            const cant = parseInt(document.getElementById(pfx+'-cant').value);
-            
-            let p = db.productos.find(i => i.cod === cod);
-            if(tipo === 'OUT' && p.stock < cant) return alert("Stock Insuficiente");
+        // CAP 2 y 3: Movimientos y Limpieza total
+        function registrarMov(tipo) {
+            const p = tipo === 'IN' ? 'in' : 'out';
+            const cod = document.getElementById(p+'-sel').value;
+            const cant = parseInt(document.getElementById(p+'-cant').value);
 
-            p.stock += (tipo === 'IN' ? cant : -cant);
-            db.movs.push({ tipo, cod, cant, guia: document.getElementById(pfx+'-guia').value, fecha: document.getElementById(pfx+'-fecha').value });
+            if(!cod) return alert("No hay productos seleccionados.");
+            if(!cant || cant <= 0) return alert("Ingrese una cantidad válida.");
+
+            let item = db.productos.find(i => i.cod === cod);
+            if(tipo === 'OUT' && item.stock < cant) return alert("STOCK INSUFICIENTE");
+
+            item.stock += (tipo === 'IN' ? cant : -cant);
             
-            save();
-            // Limpiar campos (CAP 2 y 3)
-            document.querySelectorAll(`#page-${tipo === 'IN' ? 'entradas':'salidas'} input`).forEach(i => i.value = "");
-            alert("Registrado con éxito");
+            db.movs.push({
+                tipo, cod, cant, 
+                guia: document.getElementById(p+'-guia').value,
+                fecha: document.getElementById(p+'-fecha').value,
+                chofer: document.getElementById(p+'-chofer').value
+            });
+
+            guardarDB();
+            
+            // LIMPIEZA TOTAL CAP 2 y 3
+            const inputs = document.querySelectorAll(`#page-${tipo === 'IN' ? 'entradas':'salidas'} input`);
+            inputs.forEach(i => i.value = "");
+            
+            alert("Registro Procesado Correctamente");
         }
 
-        function renderTable() {
+        function renderExistencias() {
             const tbody = document.getElementById('tabla-existencias');
-            tbody.innerHTML = db.productos.map(p => `
-                <tr><td>${p.cod}</td><td>${p.nom}</td><td>${p.stock}</td><td>${p.min}</td>
-                <td><span class="status ${p.stock <= p.min ? 'alerta':'optimo'}">${p.stock <= p.min ? 'ALERTA':'ÓPTIMO'}</span></td></tr>
-            `).join('');
+            tbody.innerHTML = db.productos.map(p => {
+                const isLow = p.stock <= p.min;
+                return `<tr>
+                    <td>${p.cod}</td><td>${p.nom}</td>
+                    <td style="color:${isLow ? '#ef4444':'#10b981'}; font-weight:bold;">${p.stock}</td>
+                    <td>${p.min}</td>
+                    <td><span class="status ${isLow ? 'alerta':'optimo'}">${isLow ? 'ALERTA':'ÓPTIMO'}</span></td>
+                </tr>`;
+            }).join('');
         }
 
-        function updateSelects() {
-            const h = db.productos.map(p => `<option value="${p.cod}">${p.nom}</option>`).join('');
-            document.getElementById('in-sel').innerHTML = h;
-            document.getElementById('out-sel').innerHTML = h;
+        function actualizarSelectores() {
+            const html = db.productos.map(p => `<option value="${p.cod}">${p.nom} (${p.cod})</option>`).join('');
+            document.getElementById('in-sel').innerHTML = html || '<option value="">Cree un producto primero</option>';
+            document.getElementById('out-sel').innerHTML = html || '<option value="">Cree un producto primero</option>';
         }
 
-        function save() { localStorage.setItem('INV_DATA', JSON.stringify(db)); }
+        function guardarDB() { localStorage.setItem('PACKING_DATABASE_2026', JSON.stringify(db)); }
 
-        // FUNCIONES DE REPORTE (CAP 4)
-        function genPDF(tipo) {
+        // CAP 4: Botones de Reporte
+        function descargarPDF(tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text(tipo === 'STOCK' ? "REPORTE DE EXISTENCIAS" : "HISTORIAL DE GUÍAS", 14, 15);
-            const data = tipo === 'STOCK' ? 
-                db.productos.map(p => [p.cod, p.nom, p.stock, p.min]) :
+            doc.setFontSize(18);
+            doc.text(tipo === 'STOCK' ? "REPORTE DE EXISTENCIAS BODEGA" : "HISTORIAL DE MOVIMIENTOS / GUÍAS", 14, 20);
+            
+            const head = tipo === 'STOCK' ? [['CÓDIGO', 'MATERIAL', 'STOCK ACTUAL', 'MÍNIMO']] : [['FECHA', 'TIPO', 'CÓDIGO', 'GUÍA', 'CANTIDAD']];
+            const body = tipo === 'STOCK' ? 
+                db.productos.map(p => [p.cod, p.nom, p.stock, p.min]) : 
                 db.movs.map(m => [m.fecha, m.tipo, m.cod, m.guia, m.cant]);
-            doc.autoTable({ head: tipo === 'STOCK' ? [['Cod','Mat','Stock','Min']] : [['Fecha','Tipo','Cod','Guia','Cant']], body: data });
-            doc.save(`${tipo}.pdf`);
+
+            doc.autoTable({ head, body, startY: 30, theme: 'grid' });
+            doc.save(`Reporte_${tipo}_2026.pdf`);
         }
 
-        function genExcel() {
+        function descargarExcel() {
             const ws = XLSX.utils.json_to_sheet(db.productos);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Stock");
-            XLSX.writeFile(wb, "Inventario_Completo.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Existencias");
+            XLSX.writeFile(wb, "Inventario_PackingT_2026.xlsx");
         }
 
-        showPage('existencias', document.querySelector('.nav-item:nth-child(2)'));
+        // Inicio automático
+        renderExistencias();
     </script>
 </body>
 </html>
