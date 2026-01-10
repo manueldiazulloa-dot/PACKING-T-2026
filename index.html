@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packing T - Inventario 2026</title>
+    <style>
+        :root { --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --border: #cbd5e1; --in-bg: #ffffff; }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #ffffff; --border: #334155; --in-bg: #334155; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 20px; }
+        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 2px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #2563eb !important; background-color: var(--in-bg) !important; color: var(--text) !important; font-size: 16px; font-weight: bold; box-sizing: border-box; }
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; border-bottom: 4px solid #1e40af; background: #2563eb; color: white; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn:active { border-bottom: 0; transform: translateY(4px); }
+        .auditoria-box { background: var(--in-bg); padding: 15px; border: 2px solid #2563eb; color: #38bdf8 !important; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+        .oculto { display: none !important; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #1e40af; color: white; padding: 12px; border: 1px solid #000; }
+        td { padding: 12px; border: 1px solid var(--border); text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body data-theme="light">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>PACKING T - SISTEMA 2026</h2>
+        <button class="btn" style="width:auto; background:#4b5563; border-bottom-color:#1f2937;" onclick="document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">🌓 MODO</button>
+    </div>
+
+    <div class="card">
+        <h3>🔍 AUDITORÍA DE GUÍAS</h3>
+        <select id="selGuia" onchange="const g=document.getElementById('selGuia').value; document.getElementById('resAud').innerHTML=(g==='1')?'ENTRADA: 3000 ESQUINEROS DE CARTON 2 MTS':'Seleccione guía...'">
+            <option value="">-- SELECCIONE --</option>
+            <option value="1">Guía: 234567</option>
+        </select>
+        <div id="resAud" class="auditoria-box">Seleccione una guía para ver el detalle...</div>
+    </div>
+
+    <div class="card" style="max-width: 500px; margin: auto;">
+        <h3 style="text-align: center;">📥 REGISTRO DE MATERIAL</h3>
+        <label>CÓDIGO</label>
+        <input type="text" id="c_cod" oninput="comprobar()" placeholder="Ej: AGR 1">
+        <div id="extraFields">
+            <label>NOMBRE MATERIAL</label>
+            <input type="text" id="c_nom">
+            <label>STOCK MÍNIMO</label>
+            <input type="number" id="c_min">
+        </div>
+        <label id="l_cant">STOCK INICIAL / CANTIDAD</label>
+        <input type="number" id="c_cant">
+        <label>FECHA</label>
+        <input type="text" value="10/01/2026" readonly style="background:#e2e8f0 !important; color:#000 !important;">
+        <button class="btn" style="background:#10b981; border-bottom-color:#059669;" onclick="guardar()">💾 GUARDAR</button>
+    </div>
+
+    <div class="card">
+        <h3>📋 EXISTENCIA DE BODEGA</h3>
+        <table>
+            <thead><tr><th>MATERIAL</th><th>ENTRADAS</th><th>SALIDAS</th><th>MÍNIMO</th><th>REAL</th></tr></thead>
+            <tbody id="listaBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let inventario = JSON.parse(localStorage.getItem('pack_final_v2026')) || [];
+        function comprobar() {
+            const cod = document.getElementById('c_cod').value.trim();
+            const existe = inventario.find(i => i.codigo === cod);
+            document.getElementById('extraFields').classList.toggle('oculto', !!existe && cod !== "");
+            document.getElementById('l_cant').innerText = (existe && cod !== "") ? "CANTIDAD A SUMAR" : "STOCK INICIAL";
+        }
+        function guardar() {
+            const cod = document.getElementById('c_cod').value.trim();
+            const q = parseInt(document.getElementById('c_cant').value) || 0;
+            if(!cod) return;
+            let i = inventario.findIndex(item => item.codigo === cod);
+            if (i !== -1) {
+                inventario[i].entradas = parseInt(inventario[i].entradas) + q;
+                inventario[i].real = parseInt(inventario[i].real) + q;
+            } else {
+                const nom = document.getElementById('c_nom').value;
+                const min = parseInt(document.getElementById('c_min').value) || 0;
+                inventario.push({ codigo: cod, nombre: nom, entradas: q, salidas: 0, minimo: min, real: q });
+            }
+            localStorage.setItem('pack_final_v2026', JSON.stringify(inventario));
+            location.reload();
+        }
+        function render() {
+            const b = document.getElementById('listaBody');
+            b.innerHTML = "";
+            inventario.forEach(item => {
+                const bajo = item.real <= item.minimo;
+                b.innerHTML += `<tr><td>${item.codigo} - ${item.nombre}</td><td>${item.entradas}</td><td>${item.salidas}</td><td>${item.minimo}</td><td style="color:${bajo ? 'red' : 'green'}">${item.real} ${bajo ? '⚠️' : ''}</td></tr>`;
+            });
+        }
+        render();
+    </script>
+</body>
+</html>
