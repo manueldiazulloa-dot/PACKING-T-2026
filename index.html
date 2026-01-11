@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v3.1 | AGR EL MAITEN LTDA</title>
+    <title>INV-PRO v3.2 | AGR EL MAITEN LTDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -154,7 +154,6 @@
             updateUI();
         }
 
-        // Mejora: Función para limpiar campos al abrir
         function openModal(id, clear = false) { 
             if(clear) {
                 const modal = document.getElementById(id);
@@ -200,7 +199,17 @@
             if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE.");
             
             tipo === 'IN' ? (prod.ent += cant, prod.stock += cant) : (prod.sal += cant, prod.stock -= cant);
-            db.movimientos.push({ tipo, cod: prod.nom, codReal: prod.cod, cant, guia: document.getElementById(p+'-guia').value, fec: document.getElementById(p+'-fec').value, pat: document.getElementById(p+'-pat').value, cho: document.getElementById(p+'-cho').value, extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value });
+            db.movimientos.push({ 
+                tipo: tipo === 'IN' ? 'ENTRADA' : 'SALIDA', 
+                cod: prod.nom, 
+                codReal: prod.cod, 
+                cant, 
+                guia: document.getElementById(p+'-guia').value, 
+                fec: document.getElementById(p+'-fec').value, 
+                pat: document.getElementById(p+'-pat').value, 
+                cho: document.getElementById(p+'-cho').value, 
+                extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value 
+            });
             save(); closeModal('mod-'+p); updateUI();
         }
 
@@ -243,23 +252,18 @@
             document.getElementById('rep-guia-sel').innerHTML = '<option value="">-- Seleccionar Guía --</option>' + guias.map(g => `<option value="${g}">${g}</option>`).join('');
         }
 
-        // Nueva función: Respaldo PDF formal
         function genFullBackupPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
             const fecha = new Date().toLocaleDateString();
-            
             doc.setFontSize(20);
             doc.text("AGR EL MAITEN LTDA - REPORTE DE BODEGA", 14, 15);
             doc.setFontSize(10);
             doc.text("Fecha de emisión: " + fecha, 14, 22);
-
             doc.autoTable({
                 head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MIN', 'STOCK ACTUAL', 'ESTADO']],
                 body: db.productos.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock, p.stock <= p.min ? 'REABASTECER' : 'OK']),
-                startY: 30,
-                theme: 'grid',
-                headStyles: { fillColor: [2, 6, 23] }
+                startY: 30, theme: 'grid', headStyles: { fillColor: [2, 6, 23] }
             });
             doc.save("Respaldo_Inventario_AGR.pdf");
         }
@@ -269,8 +273,12 @@
             if(!g) return alert("Elija una guía.");
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             const data = db.movimientos.filter(m => m.guia === g);
-            doc.text("AGR EL MAITEN LTDA - GUÍA N°: " + g, 14, 15);
-            doc.autoTable({ head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','DETALLE']], body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), startY: 25 });
+            doc.text("AGR EL MAITEN LTDA - MOVIMIENTOS DE GUÍA N°: " + g, 14, 15);
+            doc.autoTable({ 
+                head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','PROCEDENCIA/DESTINO']], 
+                body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), 
+                startY: 25 
+            });
             doc.save("Guia_"+g+".pdf");
         }
 
