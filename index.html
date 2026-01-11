@@ -3,72 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v1.2 FINAL - PACKING T</title>
+    <title>INV-PRO v1.3 - TRAZABILIDAD TOTAL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --bg: #0b1120; --side: #0f172a; --card: #1e293b; --txt: #f8fafc; --prim: #2563eb; --brd: #334155;
-        }
-        .light-mode {
-            --bg: #f8fafc; --side: #ffffff; --card: #ffffff; --txt: #0f172a; --prim: #2563eb; --brd: #e2e8f0;
-        }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; transition: 0.3s; }
+        :root { --bg: #0b1120; --side: #0f172a; --card: #1e293b; --txt: #f8fafc; --prim: #2563eb; --brd: #334155; }
+        .light-mode { --bg: #f1f5f9; --side: #ffffff; --card: #ffffff; --txt: #0f172a; --prim: #2563eb; --brd: #e2e8f0; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar Estilo Cap 1 */
-        .sidebar { width: 240px; background: var(--side); border-right: 1px solid var(--brd); padding: 20px; }
-        .nav-btn { padding: 12px; color: #94a3b8; cursor: pointer; border-radius: 8px; margin-bottom: 8px; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .sidebar { width: 260px; background: var(--side); border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; }
+        .nav-btn { padding: 12px; color: #94a3b8; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; display: flex; align-items: center; gap: 10px; font-weight: 500; }
         .nav-btn:hover, .nav-btn.active { background: var(--prim); color: white; }
 
         .content { flex: 1; padding: 30px; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .stat-card h3 { margin: 10px 0 0; font-size: 28px; }
 
-        /* Dashboard Cards */
-        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); text-align: center; }
-        .stat-card h3 { margin: 5px 0; font-size: 24px; }
+        /* Modales / Formularios */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 550px; padding: 30px; border-radius: 15px; border: 1px solid var(--prim); }
+        .close-x { position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 28px; cursor: pointer; font-weight: bold; }
 
-        /* Formularios Flotantes con Botón Cerrar (Cap 3 y 4) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; }
-        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 480px; padding: 25px; border-radius: 15px; border: 1px solid var(--prim); }
-        .close-x { position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 24px; cursor: pointer; font-weight: bold; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--brd); background: rgba(0,0,0,0.2); color: var(--txt); box-sizing: border-box; }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--brd); background: transparent; color: var(--txt); margin-top: 5px; box-sizing: border-box; }
-        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
-
-        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
-
-        /* Tabla Estilo Solicitado */
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--brd); }
-        th { background: rgba(0,0,0,0.05); padding: 15px; text-align: left; color: #94a3b8; font-size: 12px; }
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        th { background: rgba(0,0,0,0.1); padding: 15px; text-align: left; color: #94a3b8; font-size: 12px; border-bottom: 1px solid var(--brd); }
         td { padding: 15px; border-bottom: 1px solid var(--brd); }
-        .alerta { color: #ef4444; font-weight: bold; }
-        .optimo { color: #10b981; font-weight: bold; }
+        .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
     <div class="sidebar">
-        <h2 style="color:var(--prim)">INV-PRO <small style="font-size: 10px;">v1.2</small></h2>
+        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px; color:#94a3b8">v1.3</small></h2>
         <div class="nav-btn active" onclick="showTab('tab-dash')">📊 Dashboard</div>
-        <div class="nav-btn" onclick="openModal('mod-ex')">📦 Existencias</div>
-        <div class="nav-btn" onclick="openModal('mod-in')">📥 Entradas</div>
-        <div class="nav-btn" onclick="openModal('mod-out')">📤 Salidas</div>
-        <div class="nav-btn" onclick="showTab('tab-rep')">📋 Reportes</div>
-        <br>
-        <div class="nav-btn" style="margin-top: auto;" onclick="toggleTheme()">🌓 Cambiar Modo</div>
+        <div class="nav-btn" onclick="openModal('mod-ex')">📦 Nueva Existencia</div>
+        <div class="nav-btn" onclick="openModal('mod-in')">📥 Registrar Entrada</div>
+        <div class="nav-btn" onclick="openModal('mod-out')">📤 Registrar Salida</div>
+        <div class="nav-btn" onclick="showTab('tab-rep')">📋 Panel Reportes</div>
+        <div class="nav-btn" style="margin-top:auto" onclick="document.body.classList.toggle('light-mode')">🌓 Cambiar Modo</div>
     </div>
 
     <div class="content">
         <div id="tab-dash" class="tab-content">
-            <div class="header"><h1>Resumen de Bodega</h1></div>
+            <h1>Resumen de Bodega</h1>
             <div class="dash-grid">
                 <div class="stat-card"><label>Stock Total</label><h3 id="d-total">0</h3></div>
                 <div class="stat-card"><label>En Alerta</label><h3 id="d-alert" style="color:#ef4444">0</h3></div>
-                <div class="stat-card"><label>Entradas Hoy</label><h3 id="d-in">0</h3></div>
-                <div class="stat-card"><label>Salidas Hoy</label><h3 id="d-out">0</h3></div>
+                <div class="stat-card"><label>Entradas Hoy</label><h3 id="d-in" style="color:#10b981">0</h3></div>
+                <div class="stat-card"><label>Salidas Hoy</label><h3 id="d-out" style="color:#f97316">0</h3></div>
             </div>
             <table>
                 <thead>
@@ -87,79 +76,86 @@
         </div>
 
         <div id="tab-rep" class="tab-content" style="display:none">
-            <h1>Panel de Reportes</h1>
-            <div class="input-grid">
+            <h1>Panel de Trazabilidad y Reportes</h1>
+            <div class="form-row">
                 <div class="stat-card">
-                    <label>Buscar por Guía</label>
-                    <input type="text" id="rep-guia-input" placeholder="Ej: 34567">
-                    <button class="btn-main" style="background:#06b6d4" onclick="genPDFGuia()">Descargar Guía PDF</button>
+                    <label>Buscar Movimientos por Guía</label>
+                    <input type="text" id="rep-guia" placeholder="Ej: 345678">
+                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs('GUIA')">Descargar Guía PDF</button>
                 </div>
                 <div class="stat-card">
-                    <label>Buscar por Código</label>
-                    <input type="text" id="rep-cod-input" placeholder="Ej: AGR1">
-                    <button class="btn-main" style="background:var(--prim)" onclick="genPDFStock()">Descargar Stock PDF</button>
+                    <label>Filtrar Stock por Código</label>
+                    <input type="text" id="rep-cod" placeholder="Ej: AGR1">
+                    <button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">Descargar Stock PDF</button>
                 </div>
             </div>
-            <button class="btn-main" style="background:#10b981; margin-top:20px" onclick="genExcel()">Descargar Base de Datos Excel</button>
+            <button class="btn-action" style="background:#10b981" onclick="genExcel()">Exportar Base de Datos Completa (Excel)</button>
         </div>
     </div>
 
     <div id="mod-ex" class="modal">
         <div class="modal-box">
-            <span class="close-x" onclick="closeModal('mod-ex')">X</span>
-            <h3>Nuevo / Buscar Producto</h3>
-            <label>Código Material</label>
+            <span class="close-x" onclick="closeModal('mod-ex')">×</span>
+            <h3>Registrar / Buscar Material</h3>
+            <label>Código</label>
             <input type="text" id="ex-cod" onkeyup="checkExistente()" placeholder="Ej: AGR1">
-            <label>Nombre</label>
+            <label>Nombre del Material</label>
             <input type="text" id="ex-nom">
-            <div class="input-grid" style="margin-top:10px">
+            <div class="form-row">
                 <div><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div>
                 <div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div>
             </div>
-            <button class="btn-main" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR REGISTRO</button>
+            <button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR CAMBIOS</button>
         </div>
     </div>
 
     <div id="mod-in" class="modal">
         <div class="modal-box">
-            <span class="close-x" onclick="closeModal('mod-in')">X</span>
-            <h3 style="color:#10b981">📥 Registrar Entrada</h3>
-            <label>Producto</label>
+            <span class="close-x" onclick="closeModal('mod-in')">×</span>
+            <h3 style="color:#10b981">📥 Registro de Entrada</h3>
+            <label>Seleccionar Producto</label>
             <select id="in-sel"></select>
-            <div class="input-grid" style="margin-top:10px">
+            <div class="form-row">
                 <div><label>N° Guía</label><input type="text" id="in-guia"></div>
                 <div><label>Fecha</label><input type="date" id="in-fec"></div>
             </div>
-            <label>Cantidad</label>
-            <input type="number" id="in-cant">
-            <label>Chofer</label>
-            <input type="text" id="in-cho">
-            <button class="btn-main" style="background:#10b981" onclick="regMov('IN')">ACEPTAR ENTRADA</button>
+            <div class="form-row">
+                <div><label>Cantidad</label><input type="number" id="in-cant"></div>
+                <div><label>Patente</label><input type="text" id="in-pat"></div>
+            </div>
+            <div class="form-row">
+                <div><label>Chofer</label><input type="text" id="in-cho"></div>
+                <div><label>Procedencia</label><input type="text" id="in-pro"></div>
+            </div>
+            <button class="btn-action" style="background:#10b981" onclick="regMov('IN')">ACEPTAR ENTRADA</button>
         </div>
     </div>
 
     <div id="mod-out" class="modal">
         <div class="modal-box">
-            <span class="close-x" onclick="closeModal('mod-out')">X</span>
-            <h3 style="color:#f97316">📤 Registrar Salida</h3>
-            <label>Producto</label>
+            <span class="close-x" onclick="closeModal('mod-out')">×</span>
+            <h3 style="color:#f97316">📤 Registro de Salida</h3>
+            <label>Seleccionar Producto</label>
             <select id="out-sel"></select>
-            <div class="input-grid" style="margin-top:10px">
+            <div class="form-row">
                 <div><label>N° Guía</label><input type="text" id="out-guia"></div>
                 <div><label>Fecha</label><input type="date" id="out-fec"></div>
             </div>
-            <label>Cantidad</label>
-            <input type="number" id="out-cant">
-            <label>Destino</label>
-            <input type="text" id="out-des">
-            <button class="btn-main" style="background:#f97316" onclick="regMov('OUT')">ACEPTAR SALIDA</button>
+            <div class="form-row">
+                <div><label>Cantidad</label><input type="number" id="out-cant"></div>
+                <div><label>Patente</label><input type="text" id="out-pat"></div>
+            </div>
+            <div class="form-row">
+                <div><label>Chofer</label><input type="text" id="out-cho"></div>
+                <div><label>Destino</label><input type="text" id="out-des"></div>
+            </div>
+            <button class="btn-action" style="background:#f97316" onclick="regMov('OUT')">ACEPTAR SALIDA</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('PACK_DATA_V3')) || { productos: [], movimientos: [] };
+        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.3')) || { productos: [], movimientos: [] };
 
-        function toggleTheme() { document.body.classList.toggle('light-mode'); }
         function openModal(id) { document.getElementById(id).style.display = 'block'; refreshSelects(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
@@ -169,7 +165,6 @@
             updateUI();
         }
 
-        // Reconocimiento de código (Tu petición principal)
         function checkExistente() {
             const cod = document.getElementById('ex-cod').value;
             const p = db.productos.find(x => x.cod === cod);
@@ -182,21 +177,19 @@
         function saveMaterial() {
             const cod = document.getElementById('ex-cod').value;
             const nom = document.getElementById('ex-nom').value;
-            if(!cod || !nom) return alert("Complete los campos");
+            if(!cod || !nom) return alert("Faltan datos");
 
             let p = db.productos.find(x => x.cod === cod);
             if(p) {
                 p.nom = nom; p.min = parseInt(document.getElementById('ex-min').value);
             } else {
-                db.productos.push({ 
-                    cod, nom, 
-                    ent: 0, sal: 0, 
+                db.productos.push({
+                    cod, nom, ent: 0, sal: 0,
                     stock: parseInt(document.getElementById('ex-ini').value) || 0,
                     min: parseInt(document.getElementById('ex-min').value) || 10
                 });
             }
             save(); closeModal('mod-ex'); updateUI();
-            document.querySelectorAll('#mod-ex input').forEach(i => i.value = "");
         }
 
         function regMov(tipo) {
@@ -210,27 +203,31 @@
             if(tipo === 'IN') { prod.ent += cant; prod.stock += cant; }
             else { prod.sal += cant; prod.stock -= cant; }
 
-            db.movimientos.push({ 
-                tipo, cod, cant, 
+            db.movimientos.push({
+                tipo, cod, cant,
                 guia: document.getElementById(pfix+'-guia').value,
-                fec: document.getElementById(pfix+'-fec').value 
+                fec: document.getElementById(pfix+'-fec').value,
+                pat: document.getElementById(pfix+'-pat').value,
+                cho: document.getElementById(pfix+'-cho').value,
+                extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value
             });
 
             save(); closeModal('mod-'+pfix); updateUI();
-            document.querySelectorAll('.modal input').forEach(i => i.value = "");
+            alert("Registro guardado con éxito");
         }
 
         function updateUI() {
             const tbody = document.getElementById('main-table');
             tbody.innerHTML = db.productos.map(p => `
                 <tr>
-                    <td>${p.cod}</td>
+                    <td><b>${p.cod}</b></td>
                     <td>${p.nom}</td>
-                    <td>${p.ent}</td>
-                    <td>${p.sal}</td>
+                    <td style="color:#10b981">+ ${p.ent}</td>
+                    <td style="color:#f97316">- ${p.sal}</td>
                     <td>${p.min}</td>
-                    <td style="font-size:18px"><b>${p.stock}</b></td>
-                    <td class="${p.stock <= p.min ? 'alerta' : 'optimo'}">${p.stock <= p.min ? '⚠️ ALERTA' : '✅ ÓPTIMO'}</td>
+                    <td><strong style="font-size:16px">${p.stock}</strong></td>
+                    <td><span class="status-pill" style="background:${p.stock <= p.min ? '#fee2e2;color:#ef4444':'#dcfce7;color:#10b981'}">
+                        ${p.stock <= p.min ? '⚠️ ALERTA' : '✅ ÓPTIMO'}</span></td>
                 </tr>
             `).join('');
 
@@ -249,43 +246,43 @@
         function genPDFStock() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l');
-            const codBusq = document.getElementById('rep-cod-input').value;
+            const codBusq = document.getElementById('rep-cod').value;
             let data = db.productos;
             if(codBusq) data = data.filter(x => x.cod === codBusq);
 
             doc.text("REPORTE DE EXISTENCIAS - PACKING T", 14, 15);
             doc.autoTable({
-                head: [['COD', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'REAL', 'ESTADO']],
-                body: data.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock, p.stock <= p.min ? 'ALERTA' : 'OK']),
+                head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'STOCK REAL']],
+                body: data.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock]),
                 startY: 25
             });
-            doc.save("Stock_Packing.pdf");
+            doc.save("Inventario.pdf");
         }
 
-        function genPDFGuia() {
-            const num = document.getElementById('rep-guia-input').value;
-            if(!num) return alert("Ingrese número de guía");
+        function genPDFMovs() {
+            const guia = document.getElementById('rep-guia').value;
+            if(!guia) return alert("Ingrese un número de guía");
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const movs = db.movimientos.filter(m => m.guia === num);
-            
-            doc.text("DETALLE DE GUÍA N°: " + num, 14, 20);
+            const doc = new jsPDF('l');
+            const filtered = db.movimientos.filter(m => m.guia === guia);
+
+            doc.text("MOVIMIENTOS DE GUÍA N°: " + guia, 14, 15);
             doc.autoTable({
-                head: [['FECHA', 'TIPO', 'CÓDIGO', 'CANTIDAD']],
-                body: movs.map(m => [m.fec, m.tipo, m.cod, m.cant]),
-                startY: 30
+                head: [['FECHA', 'TIPO', 'CÓDIGO', 'CANT', 'CHOFER', 'PATENTE', 'PROCEDENCIA/DESTINO']],
+                body: filtered.map(m => [m.fec, m.tipo, m.cod, m.cant, m.cho, m.pat, m.extra]),
+                startY: 25
             });
-            doc.save("Guia_" + num + ".pdf");
+            doc.save("Guia_" + guia + ".pdf");
         }
 
         function genExcel() {
-            const ws = XLSX.utils.json_to_sheet(db.productos);
+            const ws = XLSX.utils.json_to_sheet(db.movimientos);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-            XLSX.writeFile(wb, "Inventario_Packing.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Historial_Completo");
+            XLSX.writeFile(wb, "Base_Datos_Packing.xlsx");
         }
 
-        function save() { localStorage.setItem('PACK_DATA_V3', JSON.stringify(db)); }
+        function save() { localStorage.setItem('PACK_DATA_V1.3', JSON.stringify(db)); }
         updateUI();
     </script>
 </body>
