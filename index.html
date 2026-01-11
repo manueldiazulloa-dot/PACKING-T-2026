@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v3.5 | AGR EL MAITEN LTDA</title>
+    <title>INV-PRO v3.6 | AGR EL MAITEN LTDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -47,7 +47,8 @@
         
         <div style="margin-top:auto; border-top:1px solid var(--brd); padding-top:20px;">
             <button onclick="genFullBackupPDF()" style="width:100%; padding:10px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; margin-bottom:8px;">📄 RESPALDO STOCK PDF</button>
-            <button onclick="downloadBackupJSON()" style="width:100%; padding:8px; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:5px; cursor:pointer; font-size:11px;">💾 Backup .JSON</button>
+            <button onclick="downloadBackupJSON()" style="width:100%; padding:8px; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:5px; cursor:pointer; font-size:11px; margin-bottom:5px;">💾 Backup .JSON</button>
+            <button onclick="limpiarBaseDeDatos()" style="width:100%; padding:8px; background:#450a0a; color:#f87171; border:1px solid #7f1d1d; border-radius:5px; cursor:pointer; font-size:11px; font-weight:bold;">⚠️ BORRAR TODO</button>
         </div>
     </div>
 
@@ -86,33 +87,9 @@
         </div>
     </div>
 
-    <div id="mod-in" class="modal"><div class="modal-box">
-        <h3 style="color:var(--in)">📥 Registrar Entrada</h3>
-        <div class="search-box">
-            <div style="flex:1"><label>Buscar por Código (Escriba y el material cambiará solo)</label>
-            <input type="text" id="in-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('IN')"></div>
-        </div>
-        <label>Material Seleccionado</label><select id="in-sel"></select>
-        <div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div>
-        <div class="form-row"><div><label>Cantidad</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div>
-        <div class="form-row"><div><label>Chofer</label><input type="text" id="in-cho"></div><div><label>Origen</label><input type="text" id="in-pro"></div></div>
-        <button class="btn-action" style="background:var(--in)" onclick="regMov('IN')">GUARDAR ENTRADA</button>
-        <button class="btn-action btn-close" onclick="closeModal('mod-in')">CERRAR</button>
-    </div></div>
+    <div id="mod-in" class="modal"><div class="modal-box"><h3 style="color:var(--in)">📥 Registrar Entrada</h3><div class="search-box"><div style="flex:1"><label>Buscar por Código</label><input type="text" id="in-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('IN')"></div></div><label>Material Seleccionado</label><select id="in-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="in-cho"></div><div><label>Origen</label><input type="text" id="in-pro"></div></div><button class="btn-action" style="background:var(--in)" onclick="regMov('IN')">GUARDAR ENTRADA</button><button class="btn-action btn-close" onclick="closeModal('mod-in')">CERRAR</button></div></div>
 
-    <div id="mod-out" class="modal"><div class="modal-box">
-        <h3 style="color:var(--out)">📤 Registrar Salida</h3>
-        <div class="search-box">
-            <div style="flex:1"><label>Buscar por Código (Escriba y el material cambiará solo)</label>
-            <input type="text" id="out-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('OUT')"></div>
-        </div>
-        <label>Material Seleccionado</label><select id="out-sel"></select>
-        <div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div>
-        <div class="form-row"><div><label>Cantidad</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div>
-        <div class="form-row"><div><label>Chofer</label><input type="text" id="out-cho"></div><div><label>Destino</label><input type="text" id="out-des"></div></div>
-        <button class="btn-action" style="background:var(--out)" onclick="regMov('OUT')">GUARDAR SALIDA</button>
-        <button class="btn-action btn-close" onclick="closeModal('mod-out')">CERRAR</button>
-    </div></div>
+    <div id="mod-out" class="modal"><div class="modal-box"><h3 style="color:var(--out)">📤 Registrar Salida</h3><div class="search-box"><div style="flex:1"><label>Buscar por Código</label><input type="text" id="out-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('OUT')"></div></div><label>Material Seleccionado</label><select id="out-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="out-cho"></div><div><label>Destino</label><input type="text" id="out-des"></div></div><button class="btn-action" style="background:var(--out)" onclick="regMov('OUT')">GUARDAR SALIDA</button><button class="btn-action btn-close" onclick="closeModal('mod-out')">CERRAR</button></div></div>
 
     <div id="mod-ex" class="modal"><div class="modal-box"><h3>📦 Gestionar Material</h3><label>Código</label><input type="text" id="ex-cod" onkeyup="checkExistente()"><label>Nombre Material</label><input type="text" id="ex-nom"><div class="form-row"><div id="box-ini"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div><div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div></div><button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR / ACTUALIZAR</button><button class="btn-action btn-close" onclick="closeModal('mod-ex')">CERRAR</button></div></div>
 
@@ -121,19 +98,26 @@
 
         function save() { localStorage.setItem('DATOS_BODEGA_AGR', JSON.stringify(db)); }
 
-        // FUNCION DE BUSQUEDA CORREGIDA
+        // FUNCION DE BORRADO TOTAL
+        function limpiarBaseDeDatos() {
+            const confirmar1 = confirm("⚠️ ¿ESTÁS SEGURO? Se borrarán todos los productos y movimientos.");
+            if(confirmar1) {
+                const confirmar2 = confirm("❗ ¿ÚLTIMA ADVERTENCIA? Perderás todos los datos de prueba.");
+                if(confirmar2) {
+                    db = { productos: [], movimientos: [] };
+                    save();
+                    updateUI();
+                    alert("Sistema reiniciado. Todo está en 0.");
+                }
+            }
+        }
+
         function buscarPorCodigo(tipo) {
             const busqueda = document.getElementById(tipo === 'IN' ? 'in-search-cod' : 'out-search-cod').value.trim().toUpperCase();
             const select = document.getElementById(tipo === 'IN' ? 'in-sel' : 'out-sel');
-            
             if(!busqueda) return;
-
-            // Buscamos el producto cuyo código coincida exactamente (sin espacios)
-            const productoEncontrado = db.productos.find(p => p.cod.replace(/\s/g, '').toUpperCase() === busqueda.replace(/\s/g, ''));
-
-            if(productoEncontrado) {
-                select.value = productoEncontrado.cod;
-            }
+            const prod = db.productos.find(p => p.cod.replace(/\s/g, '').toUpperCase() === busqueda.replace(/\s/g, ''));
+            if(prod) select.value = prod.cod;
         }
 
         function showTab(id) {
@@ -155,7 +139,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function checkExistente() {
-            const cod = document.getElementById('ex-cod').value.toUpperCase();
+            const cod = document.getElementById('ex-cod').value.trim().toUpperCase();
             const p = db.productos.find(x => x.cod === cod);
             if(p) {
                 document.getElementById('ex-nom').value = p.nom;
@@ -179,19 +163,10 @@
             const cod = document.getElementById(p+'-sel').value;
             const cant = parseInt(document.getElementById(p+'-cant').value) || 0;
             const prod = db.productos.find(x => x.cod === cod);
-            if(!prod || cant <= 0) return alert("Seleccione un material válido.");
-            if(tipo === 'OUT' && prod.stock < cant) return alert("ERROR: STOCK INSUFICIENTE.");
-            
+            if(!prod || cant <= 0) return alert("Seleccione un material.");
+            if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE.");
             tipo === 'IN' ? (prod.ent += cant, prod.stock += cant) : (prod.sal += cant, prod.stock -= cant);
-            db.movimientos.push({ 
-                tipo: tipo === 'IN' ? 'ENTRADA' : 'SALIDA', 
-                cod: prod.nom, codReal: prod.cod, cant, 
-                guia: document.getElementById(p+'-guia').value, 
-                fec: document.getElementById(p+'-fec').value, 
-                pat: document.getElementById(p+'-pat').value, 
-                cho: document.getElementById(p+'-cho').value, 
-                extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value 
-            });
+            db.movimientos.push({ tipo: tipo === 'IN' ? 'ENTRADA' : 'SALIDA', cod: prod.nom, codReal: prod.cod, cant, guia: document.getElementById(p+'-guia').value, fec: document.getElementById(p+'-fec').value, pat: document.getElementById(p+'-pat').value, cho: document.getElementById(p+'-cho').value, extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value });
             save(); closeModal('mod-'+p); updateUI();
         }
 
@@ -199,7 +174,7 @@
             const tbody = document.getElementById('main-table');
             tbody.innerHTML = db.productos.map(p => {
                 const alerta = p.stock <= p.min;
-                return `<tr><td><b>${p.cod}</b></td><td>${p.nom}</td><td style="color:var(--in)">+ ${p.ent}</td><td style="color:var(--out)">- ${p.sal}</td><td>${p.min}</td><td><strong>${p.stock}</strong></td><td><span class="badge ${alerta?'bg-alert':'bg-ok'}">${alerta?'REABASTECER':'OK'}</span></td></tr>`;
+                return `<tr><td><b>${p.cod}</b></td><td>${p.nom}</td><td style="color:var(--in)">+ ${p.ent}</td><td style="color:var(--out)">- ${p.sal}</td><td>${p.min}</td><td><strong>${p.stock}</strong></td><td><span class="badge ${alerta?'bg-alert':'bg-ok'}">${alerta?'ALERTA':'OK'}</span></td></tr>`;
             }).join('');
             document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + b.stock, 0);
             document.getElementById('d-mats').innerText = db.productos.length;
@@ -208,8 +183,8 @@
 
         function refreshSelects() {
             const opt = db.productos.map(p => `<option value="${p.cod}">${p.cod} - ${p.nom}</option>`).join('');
-            document.getElementById('in-sel').innerHTML = opt || '<option>Cree materiales primero</option>';
-            document.getElementById('out-sel').innerHTML = opt || '<option>Cree materiales primero</option>';
+            document.getElementById('in-sel').innerHTML = opt || '<option>Sin materiales</option>';
+            document.getElementById('out-sel').innerHTML = opt || '<option>Sin materiales</option>';
         }
 
         function refreshRepSelect() {
@@ -219,25 +194,25 @@
 
         function genCatalogoPDF() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text("AGR EL MAITEN LTDA - CATÁLOGO DE MATERIALES", 14, 20);
-            doc.autoTable({ head:[['CÓDIGO','MATERIAL ASOCIADO']], body: db.productos.map(p=>[p.cod, p.nom]), startY: 30 });
+            doc.text("AGR EL MAITEN LTDA - CATALOGO", 14, 20);
+            doc.autoTable({ head:[['CÓDIGO','MATERIAL']], body: db.productos.map(p=>[p.cod, p.nom]), startY: 30 });
             doc.save("Catalogo_AGR.pdf");
         }
 
         function genFullBackupPDF() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             doc.text("AGR EL MAITEN LTDA - REPORTE STOCK", 14, 15);
-            doc.autoTable({ head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'STOCK REAL']], body: db.productos.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock]), startY: 25 });
+            doc.autoTable({ head: [['CÓDIGO', 'MATERIAL', 'ENT', 'SAL', 'MIN', 'STOCK']], body: db.productos.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock]), startY: 25 });
             doc.save("Stock_AGR.pdf");
         }
 
         function genPDFMovs() {
             const g = document.getElementById('rep-guia-sel').value;
-            if(!g) return alert("No hay guías.");
+            if(!g) return;
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             const data = db.movimientos.filter(m => m.guia === g);
             doc.text("AGR EL MAITEN LTDA - GUÍA N°: " + g, 14, 15);
-            doc.autoTable({ head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','PROC/DEST']], body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), startY: 25 });
+            doc.autoTable({ head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','ORIGEN/DEST']], body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), startY: 25 });
             doc.save("Guia_"+g+".pdf");
         }
 
