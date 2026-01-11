@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v1.4 - SISTEMA LIMPIO</title>
+    <title>INV-PRO v1.5 - CORRECCIÓN STOCK</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -11,27 +11,19 @@
         :root { --bg: #0b1120; --side: #0f172a; --card: #1e293b; --txt: #f8fafc; --prim: #2563eb; --brd: #334155; }
         .light-mode { --bg: #f1f5f9; --side: #ffffff; --card: #ffffff; --txt: #0f172a; --prim: #2563eb; --brd: #e2e8f0; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
-        
         .sidebar { width: 260px; background: var(--side); border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; }
         .nav-btn { padding: 12px; color: #94a3b8; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; display: flex; align-items: center; gap: 10px; font-weight: 500; }
         .nav-btn:hover, .nav-btn.active { background: var(--prim); color: white; }
-
         .content { flex: 1; padding: 30px; overflow-y: auto; }
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .stat-card h3 { margin: 10px 0 0; font-size: 28px; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
-        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 550px; padding: 30px; border-radius: 15px; border: 1px solid var(--prim); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 550px; padding: 30px; border-radius: 15px; border: 1px solid var(--prim); }
         .close-x { position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 28px; cursor: pointer; font-weight: bold; }
-
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--brd); background: rgba(0,0,0,0.2); color: var(--txt); box-sizing: border-box; }
         label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
-
-        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
-        .btn-action:hover { opacity: 0.8; transform: translateY(-2px); }
-        
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-top: 20px; }
         th { background: rgba(0,0,0,0.2); padding: 15px; text-align: left; color: #94a3b8; font-size: 12px; border-bottom: 1px solid var(--brd); }
         td { padding: 15px; border-bottom: 1px solid var(--brd); }
@@ -41,12 +33,12 @@
 <body class="dark-mode">
 
     <div class="sidebar">
-        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px; color:#94a3b8">v1.4</small></h2>
+        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px; color:#94a3b8">v1.5</small></h2>
         <div class="nav-btn active" onclick="showTab('tab-dash')">📊 Dashboard</div>
-        <div class="nav-btn" onclick="openModal('mod-ex')">📦 Nueva Existencia</div>
-        <div class="nav-btn" onclick="openModal('mod-in')">📥 Registrar Entrada</div>
-        <div class="nav-btn" onclick="openModal('mod-out')">📤 Registrar Salida</div>
-        <div class="nav-btn" onclick="showTab('tab-rep')">📋 Panel Reportes</div>
+        <div class="nav-btn" onclick="openModal('mod-ex')">📦 Existencias</div>
+        <div class="nav-btn" onclick="openModal('mod-in')">📥 Entradas</div>
+        <div class="nav-btn" onclick="openModal('mod-out')">📤 Salidas</div>
+        <div class="nav-btn" onclick="showTab('tab-rep')">📋 Reportes</div>
         <div class="nav-btn" style="margin-top:auto" onclick="document.body.classList.toggle('light-mode')">🌓 Cambiar Modo</div>
     </div>
 
@@ -56,8 +48,8 @@
             <div class="dash-grid">
                 <div class="stat-card"><label>Stock Total</label><h3 id="d-total">0</h3></div>
                 <div class="stat-card"><label>En Alerta</label><h3 id="d-alert" style="color:#ef4444">0</h3></div>
-                <div class="stat-card"><label>Entradas Hoy</label><h3 id="d-in" style="color:#10b981">0</h3></div>
-                <div class="stat-card"><label>Salidas Hoy</label><h3 id="d-out" style="color:#f97316">0</h3></div>
+                <div class="stat-card"><label>Entradas (Hoy)</label><h3 id="d-in" style="color:#10b981">0</h3></div>
+                <div class="stat-card"><label>Salidas (Hoy)</label><h3 id="d-out" style="color:#f97316">0</h3></div>
             </div>
             <table>
                 <thead>
@@ -79,44 +71,44 @@
             <h1>Panel de Trazabilidad</h1>
             <div class="form-row">
                 <div class="stat-card">
-                    <label>Buscar Movimientos por Guía</label>
-                    <input type="text" id="rep-guia" placeholder="Ingrese N° de Guía">
-                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">Descargar Guía PDF</button>
+                    <label>Buscar por Guía</label>
+                    <input type="text" id="rep-guia" placeholder="Ingrese N° Guía">
+                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">PDF Guía</button>
                 </div>
                 <div class="stat-card">
-                    <label>Filtrar Stock por Código</label>
+                    <label>Filtrar por Código</label>
                     <input type="text" id="rep-cod" placeholder="Ej: AGR1">
-                    <button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">Descargar Stock PDF</button>
+                    <button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">PDF Stock</button>
                 </div>
             </div>
-            <button class="btn-action" style="background:#10b981; margin-top:20px" onclick="genExcel()">Exportar Excel Completo</button>
+            <button class="btn-action" style="background:#10b981; margin-top:20px" onclick="genExcel()">Exportar Excel</button>
         </div>
     </div>
 
     <div id="mod-ex" class="modal">
         <div class="modal-box">
             <span class="close-x" onclick="closeModal('mod-ex')">×</span>
-            <h3>Registrar / Editar Material</h3>
+            <h3>Nueva Existencia</h3>
             <label>Código</label>
             <input type="text" id="ex-cod" onkeyup="checkExistente()">
-            <label>Nombre del Material</label>
+            <label>Nombre Material</label>
             <input type="text" id="ex-nom">
             <div class="form-row">
-                <div><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div>
+                <div id="box-ini"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div>
                 <div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div>
             </div>
-            <button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR CAMBIOS</button>
+            <p id="msg-exist" style="color:var(--prim); display:none; font-size:12px;">* El código ya existe. Solo se actualizará nombre y mínimo.</p>
+            <button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR</button>
         </div>
     </div>
 
     <div id="mod-in" class="modal">
         <div class="modal-box">
             <span class="close-x" onclick="closeModal('mod-in')">×</span>
-            <h3 style="color:#10b981">📥 Registro de Entrada</h3>
-            <label>Seleccionar Producto</label>
-            <select id="in-sel"></select>
+            <h3 style="color:#10b981">📥 Entrada</h3>
+            <label>Producto</label><select id="in-sel"></select>
             <div class="form-row">
-                <div><label>N° Guía</label><input type="text" id="in-guia"></div>
+                <div><label>Guía</label><input type="text" id="in-guia"></div>
                 <div><label>Fecha</label><input type="date" id="in-fec"></div>
             </div>
             <div class="form-row">
@@ -127,18 +119,17 @@
                 <div><label>Chofer</label><input type="text" id="in-cho"></div>
                 <div><label>Procedencia</label><input type="text" id="in-pro"></div>
             </div>
-            <button class="btn-action" style="background:#10b981" onclick="regMov('IN')">ACEPTAR ENTRADA</button>
+            <button class="btn-action" style="background:#10b981" onclick="regMov('IN')">REGISTRAR</button>
         </div>
     </div>
 
     <div id="mod-out" class="modal">
         <div class="modal-box">
             <span class="close-x" onclick="closeModal('mod-out')">×</span>
-            <h3 style="color:#f97316">📤 Registro de Salida</h3>
-            <label>Seleccionar Producto</label>
-            <select id="out-sel"></select>
+            <h3 style="color:#f97316">📤 Salida</h3>
+            <label>Producto</label><select id="out-sel"></select>
             <div class="form-row">
-                <div><label>N° Guía</label><input type="text" id="out-guia"></div>
+                <div><label>Guía</label><input type="text" id="out-guia"></div>
                 <div><label>Fecha</label><input type="date" id="out-fec"></div>
             </div>
             <div class="form-row">
@@ -149,37 +140,20 @@
                 <div><label>Chofer</label><input type="text" id="out-cho"></div>
                 <div><label>Destino</label><input type="text" id="out-des"></div>
             </div>
-            <button class="btn-action" style="background:#f97316" onclick="regMov('OUT')">ACEPTAR SALIDA</button>
+            <button class="btn-action" style="background:#f97316" onclick="regMov('OUT')">REGISTRAR</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.4')) || { productos: [], movimientos: [] };
+        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.5')) || { productos: [], movimientos: [] };
 
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'block'; 
-            refreshSelects(); 
-        }
-
+        function openModal(id) { document.getElementById(id).style.display = 'block'; refreshSelects(); }
         function closeModal(id) { 
-            document.getElementById(id).style.display = 'none';
-            limpiarFormularios(); // <--- LIMPIEZA AUTOMÁTICA AL CERRAR
-        }
-
-        function limpiarFormularios() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                if (input.type === 'number') input.value = "0";
-                else if (input.type === 'date') input.value = "";
-                else input.value = "";
-            });
+            document.getElementById(id).style.display = 'none'; 
+            document.querySelectorAll('input').forEach(i => i.value = (i.type==='number'?'0':''));
             document.getElementById('ex-min').value = "10";
-        }
-
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-            updateUI();
+            document.getElementById('box-ini').style.opacity = "1";
+            document.getElementById('msg-exist').style.display = "none";
         }
 
         function checkExistente() {
@@ -188,6 +162,11 @@
             if(p) {
                 document.getElementById('ex-nom').value = p.nom;
                 document.getElementById('ex-min').value = p.min;
+                document.getElementById('box-ini').style.opacity = "0.3"; // Desactiva visualmente el stock inicial
+                document.getElementById('msg-exist').style.display = "block";
+            } else {
+                document.getElementById('box-ini').style.opacity = "1";
+                document.getElementById('msg-exist').style.display = "none";
             }
         }
 
@@ -198,7 +177,9 @@
 
             let p = db.productos.find(x => x.cod === cod);
             if(p) {
-                p.nom = nom; p.min = parseInt(document.getElementById('ex-min').value);
+                p.nom = nom; 
+                p.min = parseInt(document.getElementById('ex-min').value);
+                // NO SUMA EL STOCK INICIAL AQUÍ SI YA EXISTE
             } else {
                 db.productos.push({
                     cod, nom, ent: 0, sal: 0,
@@ -206,108 +187,78 @@
                     min: parseInt(document.getElementById('ex-min').value) || 10
                 });
             }
-            save(); 
-            closeModal('mod-ex'); 
-            updateUI();
+            save(); closeModal('mod-ex'); updateUI();
         }
 
         function regMov(tipo) {
-            const pfix = tipo === 'IN' ? 'in' : 'out';
-            const cod = document.getElementById(pfix+'-sel').value;
-            const cant = parseInt(document.getElementById(pfix+'-cant').value) || 0;
+            const p = tipo === 'IN' ? 'in' : 'out';
+            const cod = document.getElementById(p+'-sel').value;
+            const cant = parseInt(document.getElementById(p+'-cant').value) || 0;
             const prod = db.productos.find(x => x.cod === cod);
 
-            if(!prod) return alert("Seleccione un producto válido");
             if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE");
 
             if(tipo === 'IN') { prod.ent += cant; prod.stock += cant; }
             else { prod.sal += cant; prod.stock -= cant; }
 
             db.movimientos.push({
-                tipo, cod, cant,
-                guia: document.getElementById(pfix+'-guia').value,
-                fec: document.getElementById(pfix+'-fec').value,
-                pat: document.getElementById(pfix+'-pat').value,
-                cho: document.getElementById(pfix+'-cho').value,
+                tipo, cod, cant, guia: document.getElementById(p+'-guia').value,
+                fec: document.getElementById(p+'-fec').value,
+                pat: document.getElementById(p+'-pat').value,
+                cho: document.getElementById(p+'-cho').value,
                 extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value
             });
 
-            save(); 
-            closeModal('mod-'+pfix); 
-            updateUI();
-            alert("Registro guardado con éxito");
+            save(); closeModal('mod-'+p); updateUI();
         }
 
         function updateUI() {
             const tbody = document.getElementById('main-table');
             tbody.innerHTML = db.productos.map(p => `
                 <tr>
-                    <td><b>${p.cod}</b></td>
-                    <td>${p.nom}</td>
-                    <td style="color:#10b981">+ ${p.ent}</td>
-                    <td style="color:#f97316">- ${p.sal}</td>
-                    <td>${p.min}</td>
-                    <td><strong style="font-size:16px">${p.stock}</strong></td>
+                    <td><b>${p.cod}</b></td><td>${p.nom}</td>
+                    <td style="color:#10b981">+ ${p.ent}</td><td style="color:#f97316">- ${p.sal}</td>
+                    <td>${p.min}</td><td><strong>${p.stock}</strong></td>
                     <td><span class="status-pill" style="background:${p.stock <= p.min ? '#fee2e2;color:#ef4444':'#dcfce7;color:#10b981'}">
-                        ${p.stock <= p.min ? '⚠️ ALERTA' : '✅ ÓPTIMO'}</span></td>
+                        ${p.stock <= p.min ? 'ALERTA' : 'OK'}</span></td>
                 </tr>
             `).join('');
 
-            document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + (b.stock || 0), 0);
+            document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + b.stock, 0);
             document.getElementById('d-alert').innerText = db.productos.filter(p => p.stock <= p.min).length;
-            
             const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('d-in').innerText = db.movimientos.filter(m => m.tipo === 'IN' && m.fec === hoy).length;
-            document.getElementById('d-out').innerText = db.movimientos.filter(m => m.tipo === 'OUT' && m.fec === hoy).length;
+            document.getElementById('d-in').innerText = db.movimientos.filter(m => m.tipo==='IN' && m.fec===hoy).length;
+            document.getElementById('d-out').innerText = db.movimientos.filter(m => m.tipo==='OUT' && m.fec===hoy).length;
         }
 
         function refreshSelects() {
-            const opt = db.productos.map(p => `<option value="${p.cod}">${p.nom} (${p.cod})</option>`).join('');
-            document.getElementById('in-sel').innerHTML = opt || '<option>Cree un producto primero</option>';
-            document.getElementById('out-sel').innerHTML = opt || '<option>Cree un producto primero</option>';
+            const opt = db.productos.map(p => `<option value="${p.cod}">${p.nom}</option>`).join('');
+            document.getElementById('in-sel').innerHTML = opt;
+            document.getElementById('out-sel').innerHTML = opt;
         }
 
+        function save() { localStorage.setItem('PACK_DATA_V1.5', JSON.stringify(db)); }
+        
+        // Reportes PDF simplificados para que no pesen
         function genPDFStock() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l');
-            const codBusq = document.getElementById('rep-cod').value;
-            let data = db.productos;
-            if(codBusq) data = data.filter(x => x.cod.includes(codBusq));
-
-            doc.text("ESTADO DE STOCK - PACKING", 14, 15);
-            doc.autoTable({
-                head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'STOCK REAL']],
-                body: data.map(p => [p.cod, p.nom, p.ent, p.sal, p.stock]),
-                startY: 25
-            });
-            doc.save("Stock_Bodega.pdf");
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
+            doc.text("STOCK", 14, 15);
+            doc.autoTable({ head:[['COD','MAT','IN','OUT','REAL']], body: db.productos.map(p=>[p.cod,p.nom,p.ent,p.sal,p.stock]) });
+            doc.save("Stock.pdf");
         }
-
         function genPDFMovs() {
-            const guia = document.getElementById('rep-guia').value;
-            if(!guia) return alert("Ingrese un número de guía");
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l');
-            const filtered = db.movimientos.filter(m => m.guia === guia);
-
-            doc.text("DETALLE DE GUÍA N°: " + guia, 14, 15);
-            doc.autoTable({
-                head: [['FECHA', 'TIPO', 'MATERIAL', 'CANT', 'CHOFER', 'PATENTE', 'PROCEDENCIA/DESTINO']],
-                body: filtered.map(m => [m.fec, m.tipo, m.cod, m.cant, m.cho, m.pat, m.extra]),
-                startY: 25
-            });
-            doc.save("Guia_" + guia + ".pdf");
+            const g = document.getElementById('rep-guia').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
+            const data = db.movimientos.filter(m => m.guia === g);
+            doc.autoTable({ head:[['FEC','TIPO','MAT','CANT','CHO','PAT','PRO/DEST']], body: data.map(m=>[m.fec,m.tipo,m.cod,m.cant,m.cho,m.pat,m.extra]) });
+            doc.save("Guia_"+g+".pdf");
         }
-
         function genExcel() {
-            const ws = XLSX.utils.json_to_sheet(db.movimientos);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Historial");
-            XLSX.writeFile(wb, "Base_Datos_Packing.xlsx");
+            const ws = XLSX.utils.json_to_sheet(db.movimientos); const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data.xlsx");
         }
 
-        function save() { localStorage.setItem('PACK_DATA_V1.4', JSON.stringify(db)); }
-        updateUI();
+        showTab('tab-dash');
     </script>
 </body>
 </html>
