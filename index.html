@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v3.4 | AGR EL MAITEN LTDA</title>
+    <title>INV-PRO v3.5 | AGR EL MAITEN LTDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -70,18 +70,18 @@
             <div class="form-row">
                 <div class="stat-card">
                     <label>Catálogo de Materiales</label>
-                    <p style="font-size:12px; color:#94a3b8;">Imprime la lista de todos los códigos y sus nombres asociados.</p>
-                    <button class="btn-action" style="background:#8b5cf6" onclick="genCatalogoPDF()">🖨️ IMPRIMIR CATÁLOGO DE CÓDIGOS</button>
+                    <p style="font-size:12px; color:#94a3b8;">Imprime códigos y nombres asociados.</p>
+                    <button class="btn-action" style="background:#8b5cf6" onclick="genCatalogoPDF()">🖨️ IMPRIMIR CATÁLOGO</button>
                 </div>
                 <div class="stat-card">
                     <label>Exportar Movimientos</label>
-                    <button class="btn-action" style="background:#10b981" onclick="genExcel()">📊 DESCARGAR TODO A EXCEL</button>
+                    <button class="btn-action" style="background:#10b981" onclick="genExcel()">📊 EXCEL HISTORIAL</button>
                 </div>
             </div>
             <div class="stat-card" style="max-width: 400px;">
                 <label>Generar Guía por Número</label>
                 <select id="rep-guia-sel" style="margin-bottom:10px"></select>
-                <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">📥 DESCARGAR PDF DE GUÍA</button>
+                <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">📥 DESCARGAR GUÍA PDF</button>
             </div>
         </div>
     </div>
@@ -89,8 +89,8 @@
     <div id="mod-in" class="modal"><div class="modal-box">
         <h3 style="color:var(--in)">📥 Registrar Entrada</h3>
         <div class="search-box">
-            <div style="flex:1"><label>Buscar por Código</label><input type="text" id="in-search-cod" placeholder="Ej: AGR 1" onkeyup="buscarPorCodigo('IN')"></div>
-            <div style="display:flex; align-items:flex-end;"><span style="font-size:20px">🔍</span></div>
+            <div style="flex:1"><label>Buscar por Código (Escriba y el material cambiará solo)</label>
+            <input type="text" id="in-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('IN')"></div>
         </div>
         <label>Material Seleccionado</label><select id="in-sel"></select>
         <div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div>
@@ -103,8 +103,8 @@
     <div id="mod-out" class="modal"><div class="modal-box">
         <h3 style="color:var(--out)">📤 Registrar Salida</h3>
         <div class="search-box">
-            <div style="flex:1"><label>Buscar por Código</label><input type="text" id="out-search-cod" placeholder="Ej: AGR 2" onkeyup="buscarPorCodigo('OUT')"></div>
-            <div style="display:flex; align-items:flex-end;"><span style="font-size:20px">🔍</span></div>
+            <div style="flex:1"><label>Buscar por Código (Escriba y el material cambiará solo)</label>
+            <input type="text" id="out-search-cod" placeholder="Ej: AGR1" oninput="buscarPorCodigo('OUT')"></div>
         </div>
         <label>Material Seleccionado</label><select id="out-sel"></select>
         <div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div>
@@ -121,12 +121,19 @@
 
         function save() { localStorage.setItem('DATOS_BODEGA_AGR', JSON.stringify(db)); }
 
-        // BUSCADOR POR CÓDIGO
+        // FUNCION DE BUSQUEDA CORREGIDA
         function buscarPorCodigo(tipo) {
-            const input = document.getElementById(tipo === 'IN' ? 'in-search-cod' : 'out-search-cod').value.toUpperCase();
+            const busqueda = document.getElementById(tipo === 'IN' ? 'in-search-cod' : 'out-search-cod').value.trim().toUpperCase();
             const select = document.getElementById(tipo === 'IN' ? 'in-sel' : 'out-sel');
-            const p = db.productos.find(x => x.cod.toUpperCase() === input);
-            if(p) select.value = p.cod;
+            
+            if(!busqueda) return;
+
+            // Buscamos el producto cuyo código coincida exactamente (sin espacios)
+            const productoEncontrado = db.productos.find(p => p.cod.replace(/\s/g, '').toUpperCase() === busqueda.replace(/\s/g, ''));
+
+            if(productoEncontrado) {
+                select.value = productoEncontrado.cod;
+            }
         }
 
         function showTab(id) {
@@ -148,7 +155,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function checkExistente() {
-            const cod = document.getElementById('ex-cod').value;
+            const cod = document.getElementById('ex-cod').value.toUpperCase();
             const p = db.productos.find(x => x.cod === cod);
             if(p) {
                 document.getElementById('ex-nom').value = p.nom;
@@ -158,8 +165,8 @@
         }
 
         function saveMaterial() {
-            const cod = document.getElementById('ex-cod').value.toUpperCase();
-            const nom = document.getElementById('ex-nom').value.toUpperCase();
+            const cod = document.getElementById('ex-cod').value.trim().toUpperCase();
+            const nom = document.getElementById('ex-nom').value.trim().toUpperCase();
             if(!cod || !nom) return alert("Complete los campos.");
             let p = db.productos.find(x => x.cod === cod);
             if(p) { p.nom = nom; p.min = parseInt(document.getElementById('ex-min').value); } 
@@ -210,20 +217,18 @@
             document.getElementById('rep-guia-sel').innerHTML = guias.map(g => `<option value="${g}">${g}</option>`).join('');
         }
 
-        // NUEVO REPORTE: CATÁLOGO DE CÓDIGOS
         function genCatalogoPDF() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.setFontSize(18); doc.text("AGR EL MAITEN LTDA - CATÁLOGO DE MATERIALES", 14, 20);
-            doc.setFontSize(10); doc.text("Lista oficial de códigos y productos asociados.", 14, 28);
-            doc.autoTable({ head:[['CÓDIGO','MATERIAL ASOCIADO']], body: db.productos.map(p=>[p.cod, p.nom]), startY: 35, theme: 'striped', headStyles: { fillColor: [59, 130, 246] } });
-            doc.save("Catalogo_Codigos_AGR.pdf");
+            doc.text("AGR EL MAITEN LTDA - CATÁLOGO DE MATERIALES", 14, 20);
+            doc.autoTable({ head:[['CÓDIGO','MATERIAL ASOCIADO']], body: db.productos.map(p=>[p.cod, p.nom]), startY: 30 });
+            doc.save("Catalogo_AGR.pdf");
         }
 
         function genFullBackupPDF() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
-            doc.text("AGR EL MAITEN LTDA - REPORTE DE STOCK ACTUAL", 14, 15);
-            doc.autoTable({ head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'STOCK REAL', 'ESTADO']], body: db.productos.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock, p.stock <= p.min ? 'ALERTA' : 'OK']), startY: 25 });
-            doc.save("Respaldo_Stock_AGR.pdf");
+            doc.text("AGR EL MAITEN LTDA - REPORTE STOCK", 14, 15);
+            doc.autoTable({ head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'STOCK REAL']], body: db.productos.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock]), startY: 25 });
+            doc.save("Stock_AGR.pdf");
         }
 
         function genPDFMovs() {
@@ -232,19 +237,19 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             const data = db.movimientos.filter(m => m.guia === g);
             doc.text("AGR EL MAITEN LTDA - GUÍA N°: " + g, 14, 15);
-            doc.autoTable({ head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','PROCEDENCIA/DESTINO']], body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), startY: 25 });
+            doc.autoTable({ head:[['FECHA','TIPO','CÓDIGO','MATERIAL','CANT','CHOFER','PATENTE','PROC/DEST']], body: data.map(m=>[m.fec, m.tipo, m.codReal, m.cod, m.cant, m.cho, m.pat, m.extra]), startY: 25 });
             doc.save("Guia_"+g+".pdf");
         }
 
         function genExcel() {
             const ws = XLSX.utils.json_to_sheet(db.movimientos);
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Historial");
-            XLSX.writeFile(wb, "Inventario_AGR.xlsx");
+            XLSX.writeFile(wb, "Historial_AGR.xlsx");
         }
 
         function downloadBackupJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "backup_bodega_agr.json"); dl.click();
+            const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "backup_agr.json"); dl.click();
         }
 
         updateUI();
