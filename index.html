@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v1.3 - TRAZABILIDAD TOTAL</title>
+    <title>INV-PRO v1.4 - SISTEMA LIMPIO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -21,27 +21,27 @@
         .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .stat-card h3 { margin: 10px 0 0; font-size: 28px; }
 
-        /* Modales / Formularios */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 550px; padding: 30px; border-radius: 15px; border: 1px solid var(--prim); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
+        .modal-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); width: 550px; padding: 30px; border-radius: 15px; border: 1px solid var(--prim); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
         .close-x { position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 28px; cursor: pointer; font-weight: bold; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--brd); background: rgba(0,0,0,0.2); color: var(--txt); box-sizing: border-box; }
         label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
 
-        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        .btn-action:hover { opacity: 0.8; transform: translateY(-2px); }
         
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
-        th { background: rgba(0,0,0,0.1); padding: 15px; text-align: left; color: #94a3b8; font-size: 12px; border-bottom: 1px solid var(--brd); }
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-top: 20px; }
+        th { background: rgba(0,0,0,0.2); padding: 15px; text-align: left; color: #94a3b8; font-size: 12px; border-bottom: 1px solid var(--brd); }
         td { padding: 15px; border-bottom: 1px solid var(--brd); }
-        .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .status-pill { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
-<body>
+<body class="dark-mode">
 
     <div class="sidebar">
-        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px; color:#94a3b8">v1.3</small></h2>
+        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px; color:#94a3b8">v1.4</small></h2>
         <div class="nav-btn active" onclick="showTab('tab-dash')">📊 Dashboard</div>
         <div class="nav-btn" onclick="openModal('mod-ex')">📦 Nueva Existencia</div>
         <div class="nav-btn" onclick="openModal('mod-in')">📥 Registrar Entrada</div>
@@ -76,12 +76,12 @@
         </div>
 
         <div id="tab-rep" class="tab-content" style="display:none">
-            <h1>Panel de Trazabilidad y Reportes</h1>
+            <h1>Panel de Trazabilidad</h1>
             <div class="form-row">
                 <div class="stat-card">
                     <label>Buscar Movimientos por Guía</label>
-                    <input type="text" id="rep-guia" placeholder="Ej: 345678">
-                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs('GUIA')">Descargar Guía PDF</button>
+                    <input type="text" id="rep-guia" placeholder="Ingrese N° de Guía">
+                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">Descargar Guía PDF</button>
                 </div>
                 <div class="stat-card">
                     <label>Filtrar Stock por Código</label>
@@ -89,16 +89,16 @@
                     <button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">Descargar Stock PDF</button>
                 </div>
             </div>
-            <button class="btn-action" style="background:#10b981" onclick="genExcel()">Exportar Base de Datos Completa (Excel)</button>
+            <button class="btn-action" style="background:#10b981; margin-top:20px" onclick="genExcel()">Exportar Excel Completo</button>
         </div>
     </div>
 
     <div id="mod-ex" class="modal">
         <div class="modal-box">
             <span class="close-x" onclick="closeModal('mod-ex')">×</span>
-            <h3>Registrar / Buscar Material</h3>
+            <h3>Registrar / Editar Material</h3>
             <label>Código</label>
-            <input type="text" id="ex-cod" onkeyup="checkExistente()" placeholder="Ej: AGR1">
+            <input type="text" id="ex-cod" onkeyup="checkExistente()">
             <label>Nombre del Material</label>
             <input type="text" id="ex-nom">
             <div class="form-row">
@@ -154,11 +154,28 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.3')) || { productos: [], movimientos: [] };
+        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.4')) || { productos: [], movimientos: [] };
 
-        function openModal(id) { document.getElementById(id).style.display = 'block'; refreshSelects(); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
+        function openModal(id) { 
+            document.getElementById(id).style.display = 'block'; 
+            refreshSelects(); 
+        }
+
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none';
+            limpiarFormularios(); // <--- LIMPIEZA AUTOMÁTICA AL CERRAR
+        }
+
+        function limpiarFormularios() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                if (input.type === 'number') input.value = "0";
+                else if (input.type === 'date') input.value = "";
+                else input.value = "";
+            });
+            document.getElementById('ex-min').value = "10";
+        }
+
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
             document.getElementById(id).style.display = 'block';
@@ -189,7 +206,9 @@
                     min: parseInt(document.getElementById('ex-min').value) || 10
                 });
             }
-            save(); closeModal('mod-ex'); updateUI();
+            save(); 
+            closeModal('mod-ex'); 
+            updateUI();
         }
 
         function regMov(tipo) {
@@ -198,6 +217,7 @@
             const cant = parseInt(document.getElementById(pfix+'-cant').value) || 0;
             const prod = db.productos.find(x => x.cod === cod);
 
+            if(!prod) return alert("Seleccione un producto válido");
             if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE");
 
             if(tipo === 'IN') { prod.ent += cant; prod.stock += cant; }
@@ -212,7 +232,9 @@
                 extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value
             });
 
-            save(); closeModal('mod-'+pfix); updateUI();
+            save(); 
+            closeModal('mod-'+pfix); 
+            updateUI();
             alert("Registro guardado con éxito");
         }
 
@@ -231,16 +253,18 @@
                 </tr>
             `).join('');
 
-            document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + b.stock, 0);
+            document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + (b.stock || 0), 0);
             document.getElementById('d-alert').innerText = db.productos.filter(p => p.stock <= p.min).length;
-            document.getElementById('d-in').innerText = db.movimientos.filter(m => m.tipo === 'IN').length;
-            document.getElementById('d-out').innerText = db.movimientos.filter(m => m.tipo === 'OUT').length;
+            
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('d-in').innerText = db.movimientos.filter(m => m.tipo === 'IN' && m.fec === hoy).length;
+            document.getElementById('d-out').innerText = db.movimientos.filter(m => m.tipo === 'OUT' && m.fec === hoy).length;
         }
 
         function refreshSelects() {
             const opt = db.productos.map(p => `<option value="${p.cod}">${p.nom} (${p.cod})</option>`).join('');
-            document.getElementById('in-sel').innerHTML = opt;
-            document.getElementById('out-sel').innerHTML = opt;
+            document.getElementById('in-sel').innerHTML = opt || '<option>Cree un producto primero</option>';
+            document.getElementById('out-sel').innerHTML = opt || '<option>Cree un producto primero</option>';
         }
 
         function genPDFStock() {
@@ -248,15 +272,15 @@
             const doc = new jsPDF('l');
             const codBusq = document.getElementById('rep-cod').value;
             let data = db.productos;
-            if(codBusq) data = data.filter(x => x.cod === codBusq);
+            if(codBusq) data = data.filter(x => x.cod.includes(codBusq));
 
-            doc.text("REPORTE DE EXISTENCIAS - PACKING T", 14, 15);
+            doc.text("ESTADO DE STOCK - PACKING", 14, 15);
             doc.autoTable({
-                head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'MÍNIMO', 'STOCK REAL']],
-                body: data.map(p => [p.cod, p.nom, p.ent, p.sal, p.min, p.stock]),
+                head: [['CÓDIGO', 'MATERIAL', 'ENTRADAS', 'SALIDAS', 'STOCK REAL']],
+                body: data.map(p => [p.cod, p.nom, p.ent, p.sal, p.stock]),
                 startY: 25
             });
-            doc.save("Inventario.pdf");
+            doc.save("Stock_Bodega.pdf");
         }
 
         function genPDFMovs() {
@@ -266,9 +290,9 @@
             const doc = new jsPDF('l');
             const filtered = db.movimientos.filter(m => m.guia === guia);
 
-            doc.text("MOVIMIENTOS DE GUÍA N°: " + guia, 14, 15);
+            doc.text("DETALLE DE GUÍA N°: " + guia, 14, 15);
             doc.autoTable({
-                head: [['FECHA', 'TIPO', 'CÓDIGO', 'CANT', 'CHOFER', 'PATENTE', 'PROCEDENCIA/DESTINO']],
+                head: [['FECHA', 'TIPO', 'MATERIAL', 'CANT', 'CHOFER', 'PATENTE', 'PROCEDENCIA/DESTINO']],
                 body: filtered.map(m => [m.fec, m.tipo, m.cod, m.cant, m.cho, m.pat, m.extra]),
                 startY: 25
             });
@@ -278,11 +302,11 @@
         function genExcel() {
             const ws = XLSX.utils.json_to_sheet(db.movimientos);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Historial_Completo");
+            XLSX.utils.book_append_sheet(wb, ws, "Historial");
             XLSX.writeFile(wb, "Base_Datos_Packing.xlsx");
         }
 
-        function save() { localStorage.setItem('PACK_DATA_V1.3', JSON.stringify(db)); }
+        function save() { localStorage.setItem('PACK_DATA_V1.4', JSON.stringify(db)); }
         updateUI();
     </script>
 </body>
