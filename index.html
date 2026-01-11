@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v1.7 - LIMPIEZA TOTAL</title>
+    <title>INV-PRO v1.9 - FINAL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -34,7 +34,7 @@
 <body>
 
     <div class="sidebar">
-        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px">v1.7</small></h2>
+        <h2 style="color:var(--prim); margin-bottom:30px;">INV-PRO <small style="font-size:12px">v1.9</small></h2>
         <div id="btn-dash" class="nav-btn active" onclick="showTab('tab-dash')">📊 Dashboard</div>
         <div class="nav-btn" onclick="openModal('mod-ex')">📦 Existencias</div>
         <div class="nav-btn" onclick="openModal('mod-in')">📥 Entradas</div>
@@ -49,89 +49,93 @@
             <div class="dash-grid">
                 <div class="stat-card"><label>Stock Total</label><h3 id="d-total">0</h3></div>
                 <div class="stat-card"><label>En Alerta</label><h3 id="d-alert" style="color:#ef4444">0</h3></div>
-                <div class="stat-card"><label>Entradas (Hoy)</label><h3 id="d-in" style="color:#10b981">0</h3></div>
-                <div class="stat-card"><label>Salidas (Hoy)</label><h3 id="d-out" style="color:#f97316">0</h3></div>
+                <div class="stat-card"><label>Entradas Hoy</label><h3 id="d-in" style="color:#10b981">0</h3></div>
+                <div class="stat-card"><label>Salidas Hoy</label><h3 id="d-out" style="color:#f97316">0</h3></div>
             </div>
             <table>
-                <thead><tr><th>CÓDIGO</th><th>MATERIAL</th><th>IN</th><th>OUT</th><th>MÍN</th><th>REAL</th><th>ESTADO</th></tr></thead>
+                <thead><tr><th>CÓDIGO</th><th>MATERIAL</th><th>ENTRADAS</th><th>SALIDAS</th><th>MÍNIMO</th><th>STOCK REAL</th><th>ESTADO</th></tr></thead>
                 <tbody id="main-table"></tbody>
             </table>
         </div>
 
         <div id="tab-rep" class="tab-content">
-            <h1>Reportes y Trazabilidad</h1>
+            <h1>Panel de Trazabilidad</h1>
             <div class="form-row">
-                <div class="stat-card"><label>Guía PDF</label><input type="text" id="rep-guia" placeholder="N° Guía"><button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">DESCARGAR</button></div>
-                <div class="stat-card"><label>Stock PDF</label><input type="text" id="rep-cod" placeholder="Código"><button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">DESCARGAR</button></div>
+                <div class="stat-card">
+                    <label>Generar Guía PDF</label>
+                    <select id="rep-guia-sel" style="margin-bottom:10px"></select>
+                    <button class="btn-action" style="background:#06b6d4" onclick="genPDFMovs()">DESCARGAR GUÍA</button>
+                </div>
+                <div class="stat-card">
+                    <label>Filtro Stock PDF</label>
+                    <input type="text" id="rep-cod" placeholder="Código (Opcional)">
+                    <button class="btn-action" style="background:var(--prim)" onclick="genPDFStock()">DESCARGAR STOCK</button>
+                </div>
             </div>
-            <button class="btn-action" style="background:#10b981; margin-top:20px" onclick="genExcel()">EXPORTAR EXCEL</button>
+            <button class="btn-action" style="background:#10b981; margin-top:20px" onclick="genExcel()">EXPORTAR TODO A EXCEL</button>
         </div>
     </div>
 
     <div id="mod-ex" class="modal">
         <div class="modal-box">
             <button class="close-x" onclick="closeModal('mod-ex')">×</button>
-            <h3>Material</h3>
+            <h3>Ficha Material</h3>
             <label>Código</label><input type="text" id="ex-cod" onkeyup="checkExistente()">
-            <label>Nombre</label><input type="text" id="ex-nom">
+            <label>Nombre Material</label><input type="text" id="ex-nom">
             <div class="form-row">
-                <div id="box-ini"><label>S. Inicial</label><input type="number" id="ex-ini" value="0"></div>
-                <div><label>S. Mínimo</label><input type="number" id="ex-min" value="10"></div>
+                <div id="box-ini"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div>
+                <div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div>
             </div>
-            <button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR</button>
+            <button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR CAMBIOS</button>
         </div>
     </div>
 
     <div id="mod-in" class="modal">
         <div class="modal-box">
             <button class="close-x" onclick="closeModal('mod-in')">×</button>
-            <h3 style="color:#10b981">Entrada</h3>
+            <h3 style="color:#10b981">Registrar Entrada</h3>
             <label>Producto</label><select id="in-sel"></select>
-            <div class="form-row"><div><label>Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div>
-            <div class="form-row"><div><label>Cant.</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div>
+            <div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div>
+            <div class="form-row"><div><label>Cantidad</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div>
             <div class="form-row"><div><label>Chofer</label><input type="text" id="in-cho"></div><div><label>Procedencia</label><input type="text" id="in-pro"></div></div>
-            <button class="btn-action" style="background:#10b981" onclick="regMov('IN')">REGISTRAR</button>
+            <button class="btn-action" style="background:#10b981" onclick="regMov('IN')">ACEPTAR ENTRADA</button>
         </div>
     </div>
 
     <div id="mod-out" class="modal">
         <div class="modal-box">
             <button class="close-x" onclick="closeModal('mod-out')">×</button>
-            <h3 style="color:#f97316">Salida</h3>
+            <h3 style="color:#f97316">Registrar Salida</h3>
             <label>Producto</label><select id="out-sel"></select>
-            <div class="form-row"><div><label>Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div>
-            <div class="form-row"><div><label>Cant.</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div>
+            <div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div>
+            <div class="form-row"><div><label>Cantidad</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div>
             <div class="form-row"><div><label>Chofer</label><input type="text" id="out-cho"></div><div><label>Destino</label><input type="text" id="out-des"></div></div>
-            <button class="btn-action" style="background:#f97316" onclick="regMov('OUT')">REGISTRAR</button>
+            <button class="btn-action" style="background:#f97316" onclick="regMov('OUT')">ACEPTAR SALIDA</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.7')) || { productos: [], movimientos: [] };
+        let db = JSON.parse(localStorage.getItem('PACK_DATA_V1.9')) || { productos: [], movimientos: [] };
 
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(id === 'tab-dash') document.getElementById('btn-dash').classList.add('active');
-            if(id === 'tab-rep') document.getElementById('btn-rep').classList.add('active');
+            if(id === 'tab-rep') {
+                document.getElementById('btn-rep').classList.add('active');
+                refreshRepSelect();
+            }
             updateUI();
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'block'; refreshSelects(); }
 
-        // --- FUNCIÓN DE LIMPIEZA CORREGIDA ---
         function closeModal(id) { 
-            document.getElementById(id).style.display = 'none';
-            // Limpia todos los inputs dentro de este modal específico
             const modal = document.getElementById(id);
-            const inputs = modal.querySelectorAll('input');
-            inputs.forEach(i => {
-                if(i.type === 'number') i.value = "0";
-                else i.value = "";
-            });
-            // Reset de ayudas visuales
-            if(id === 'mod-ex') {
+            modal.style.display = 'none';
+            modal.querySelectorAll('input').forEach(i => i.value = (i.type === 'number' ? '0' : ''));
+            if(id === 'mod-ex') { 
                 document.getElementById('ex-min').value = "10";
                 document.getElementById('box-ini').style.opacity = "1";
             }
@@ -144,15 +148,13 @@
                 document.getElementById('ex-nom').value = p.nom;
                 document.getElementById('ex-min').value = p.min;
                 document.getElementById('box-ini').style.opacity = "0.3";
-            } else {
-                document.getElementById('box-ini').style.opacity = "1";
-            }
+            } else { document.getElementById('box-ini').style.opacity = "1"; }
         }
 
         function saveMaterial() {
             const cod = document.getElementById('ex-cod').value;
             const nom = document.getElementById('ex-nom').value;
-            if(!cod || !nom) return alert("Faltan datos");
+            if(!cod || !nom) return alert("Complete los datos");
             let p = db.productos.find(x => x.cod === cod);
             if(p) { p.nom = nom; p.min = parseInt(document.getElementById('ex-min').value); }
             else { db.productos.push({ cod, nom, ent: 0, sal: 0, stock: parseInt(document.getElementById('ex-ini').value) || 0, min: parseInt(document.getElementById('ex-min').value) || 10 }); }
@@ -164,50 +166,77 @@
             const cod = document.getElementById(p+'-sel').value;
             const cant = parseInt(document.getElementById(p+'-cant').value) || 0;
             const prod = db.productos.find(x => x.cod === cod);
+            if(!prod) return alert("Seleccione material");
             if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE");
+            
             if(tipo === 'IN') { prod.ent += cant; prod.stock += cant; }
             else { prod.sal += cant; prod.stock -= cant; }
-            db.movimientos.push({ tipo, cod, cant, guia: document.getElementById(p+'-guia').value, fec: document.getElementById(p+'-fec').value, pat: document.getElementById(p+'-pat').value, cho: document.getElementById(p+'-cho').value, extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value });
+
+            db.movimientos.push({ 
+                tipo, cod, cant, 
+                guia: document.getElementById(p+'-guia').value, 
+                fec: document.getElementById(p+'-fec').value, 
+                pat: document.getElementById(p+'-pat').value, 
+                cho: document.getElementById(p+'-cho').value, 
+                extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value 
+            });
             save(); closeModal('mod-'+p); updateUI();
         }
 
         function updateUI() {
             const tbody = document.getElementById('main-table');
-            tbody.innerHTML = db.productos.map(p => `<tr><td><b>${p.cod}</b></td><td>${p.nom}</td><td>${p.ent}</td><td>${p.sal}</td><td>${p.min}</td><td><strong>${p.stock}</strong></td><td>${p.stock<=p.min?'⚠️':'✅'}</td></tr>`).join('');
+            tbody.innerHTML = db.productos.map(p => `<tr><td><b>${p.cod}</b></td><td>${p.nom}</td><td>+ ${p.ent}</td><td>- ${p.sal}</td><td>${p.min}</td><td><strong>${p.stock}</strong></td><td>${p.stock<=p.min?'⚠️ ALERTA':'✅ ÓPTIMO'}</td></tr>`).join('');
+            
             document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + b.stock, 0);
             document.getElementById('d-alert').innerText = db.productos.filter(p => p.stock <= p.min).length;
+            
             const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('d-in').innerText = db.movimientos.filter(m => m.tipo==='IN' && m.fec===hoy).length;
-            document.getElementById('d-out').innerText = db.movimientos.filter(m => m.tipo==='OUT' && m.fec===hoy).length;
+            const movsHoy = db.movimientos.filter(m => m.fec === hoy);
+            document.getElementById('d-in').innerText = movsHoy.filter(m => m.tipo === 'IN').reduce((a,b) => a + b.cant, 0);
+            document.getElementById('d-out').innerText = movsHoy.filter(m => m.tipo === 'OUT').reduce((a,b) => a + b.cant, 0);
         }
 
         function refreshSelects() {
             const opt = db.productos.map(p => `<option value="${p.cod}">${p.nom}</option>`).join('');
-            document.getElementById('in-sel').innerHTML = opt;
-            document.getElementById('out-sel').innerHTML = opt;
+            document.getElementById('in-sel').innerHTML = opt || '<option>Cree productos</option>';
+            document.getElementById('out-sel').innerHTML = opt || '<option>Cree productos</option>';
+        }
+
+        function refreshRepSelect() {
+            const guias = [...new Set(db.movimientos.map(m => m.guia))];
+            document.getElementById('rep-guia-sel').innerHTML = guias.map(g => `<option value="${g}">${g}</option>`).join('');
         }
 
         function genPDFStock() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
-            doc.autoTable({ head:[['COD','MAT','ENT','SAL','REAL']], body: db.productos.map(p=>[p.cod,p.nom,p.ent,p.sal,p.stock]) });
-            doc.save("Stock.pdf");
+            doc.text("ESTADO DE INVENTARIO REAL", 14, 15);
+            doc.autoTable({ head:[['CÓDIGO','MATERIAL','ENTRADAS','SALIDAS','STOCK REAL']], body: db.productos.map(p=>[p.cod,p.nom,p.ent,p.sal,p.stock]) });
+            doc.save("Stock_Packing.pdf");
         }
 
         function genPDFMovs() {
-            const g = document.getElementById('rep-guia').value;
+            const g = document.getElementById('rep-guia-sel').value;
+            if(!g) return alert("No hay guías");
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             const data = db.movimientos.filter(m => m.guia === g);
-            doc.autoTable({ head:[['FEC','TIPO','MAT','CANT','CHOFER','PATENTE','PROC/DEST']], body: data.map(m=>[m.fec,m.tipo,m.cod,m.cant,m.cho,m.pat,m.extra]) });
-            doc.save("Guia_"+g+".pdf");
+            doc.text("DETALLE DE MOVIMIENTOS - GUIA: " + g, 14, 15);
+            doc.autoTable({ 
+                head:[['FECHA','TIPO','CÓDIGO','CANT','CHOFER','PATENTE','PROC/DEST']], 
+                body: data.map(m=>[m.fec, m.tipo === 'IN' ? 'ENTRADA' : 'SALIDA', m.cod, m.cant, m.cho, m.pat, m.extra]) 
+            });
+            doc.save("Reporte_Guia_"+g+".pdf");
         }
 
         function genExcel() {
-            const ws = XLSX.utils.json_to_sheet(db.movimientos);
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data");
-            XLSX.writeFile(wb, "Reporte.xlsx");
+            const dataProc = db.movimientos.map(m => ({
+                Fecha: m.fec, Tipo: m.tipo === 'IN' ? 'ENTRADA' : 'SALIDA', Guia: m.guia, Codigo: m.cod, Cantidad: m.cant, Chofer: m.cho, Patente: m.pat, Origen_Destino: m.extra
+            }));
+            const ws = XLSX.utils.json_to_sheet(dataProc);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Movimientos");
+            XLSX.writeFile(wb, "Inventario_Completo.xlsx");
         }
 
-        function save() { localStorage.setItem('PACK_DATA_V1.7', JSON.stringify(db)); }
+        function save() { localStorage.setItem('PACK_DATA_V1.9', JSON.stringify(db)); }
         updateUI();
     </script>
 </body>
