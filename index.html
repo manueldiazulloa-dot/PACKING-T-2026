@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INV-PRO v3.8 | AGR EL MAITEN LTDA</title>
+    <title>INV-PRO v3.9 | AGR EL MAITEN LTDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -27,7 +27,6 @@
         .btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-close { background: #4b5563; margin-top: 10px; }
         
-        /* SCROLL VERTICAL PARA EL PANEL DE CONTROL */
         .table-container { 
             max-height: 450px; 
             overflow-y: auto; 
@@ -103,22 +102,28 @@
         </div>
     </div>
 
-    <div id="mod-in" class="modal"><div class="modal-box"><h3 style="color:var(--in)">📥 Registrar Entrada</h3><div class="search-box"><div style="flex:1"><label>Buscar Código Exacto</label><input type="text" id="in-search-cod" oninput="buscarPorCodigo('IN')"></div></div><label>Material</label><select id="in-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="in-cho"></div><div><label>Origen</label><input type="text" id="in-pro"></div></div><button class="btn-action" style="background:var(--in)" onclick="regMov('IN')">GUARDAR ENTRADA</button><button class="btn-action btn-close" onclick="closeModal('mod-in')">CERRAR</button></div></div>
+    <div id="mod-in" class="modal"><div class="modal-box"><h3 style="color:var(--in)">📥 Registrar Entrada</h3><div class="search-box"><div style="flex:1"><label>Buscar Código (Presiona Enter)</label><input type="text" id="in-search-cod" onkeypress="if(event.key==='Enter') buscarPorCodigo('IN')"></div></div><label>Material Seleccionado</label><select id="in-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="in-guia"></div><div><label>Fecha</label><input type="date" id="in-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="in-cant"></div><div><label>Patente</label><input type="text" id="in-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="in-cho"></div><div><label>Origen</label><input type="text" id="in-pro"></div></div><button class="btn-action" style="background:var(--in)" onclick="regMov('IN')">GUARDAR ENTRADA</button><button class="btn-action btn-close" onclick="closeModal('mod-in')">CERRAR</button></div></div>
 
-    <div id="mod-out" class="modal"><div class="modal-box"><h3 style="color:var(--out)">📤 Registrar Salida</h3><div class="search-box"><div style="flex:1"><label>Buscar Código Exacto</label><input type="text" id="out-search-cod" oninput="buscarPorCodigo('OUT')"></div></div><label>Material</label><select id="out-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="out-cho"></div><div><label>Destino</label><input type="text" id="out-des"></div></div><button class="btn-action" style="background:var(--out)" onclick="regMov('OUT')">GUARDAR SALIDA</button><button class="btn-action btn-close" onclick="closeModal('mod-out')">CERRAR</button></div></div>
+    <div id="mod-out" class="modal"><div class="modal-box"><h3 style="color:var(--out)">📤 Registrar Salida</h3><div class="search-box"><div style="flex:1"><label>Buscar Código (Presiona Enter)</label><input type="text" id="out-search-cod" onkeypress="if(event.key==='Enter') buscarPorCodigo('OUT')"></div></div><label>Material Seleccionado</label><select id="out-sel"></select><div class="form-row"><div><label>N° Guía</label><input type="text" id="out-guia"></div><div><label>Fecha</label><input type="date" id="out-fec"></div></div><div class="form-row"><div><label>Cantidad</label><input type="number" id="out-cant"></div><div><label>Patente</label><input type="text" id="out-pat"></div></div><div class="form-row"><div><label>Chofer</label><input type="text" id="out-cho"></div><div><label>Destino</label><input type="text" id="out-des"></div></div><button class="btn-action" style="background:var(--out)" onclick="regMov('OUT')">GUARDAR SALIDA</button><button class="btn-action btn-close" onclick="closeModal('mod-out')">CERRAR</button></div></div>
 
-    <div id="mod-ex" class="modal"><div class="modal-box"><h3>📦 Gestionar Material</h3><label>Código</label><input type="text" id="ex-cod" onkeyup="checkExistente()"><label>Nombre Material</label><input type="text" id="ex-nom"><div class="form-row"><div id="box-ini"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div><div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div></div><button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR / ACTUALIZAR</button><button class="btn-action btn-close" onclick="closeModal('mod-ex')">CERRAR</button></div></div>
+    <div id="mod-ex" class="modal"><div class="modal-box"><h3>📦 Gestionar Material</h3><label>Código</label><input type="text" id="ex-cod" onblur="checkExistente()"><label>Nombre Material</label><input type="text" id="ex-nom"><div class="form-row"><div id="box-ini"><label>Stock Inicial</label><input type="number" id="ex-ini" value="0"></div><div><label>Stock Mínimo</label><input type="number" id="ex-min" value="10"></div></div><button class="btn-action" style="background:var(--prim)" onclick="saveMaterial()">GUARDAR / ACTUALIZAR</button><button class="btn-action btn-close" onclick="closeModal('mod-ex')">CERRAR</button></div></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('DATOS_BODEGA_AGR')) || { productos: [], movimientos: [] };
         function save() { localStorage.setItem('DATOS_BODEGA_AGR', JSON.stringify(db)); }
 
-        // PUNTO 2 CORREGIDO: BUSQUEDA EXACTA PARA EVITAR ERROR AGR10 -> AGR1
+        // SOLUCIÓN PUNTO 2: BÚSQUEDA SOLO POR ENTER O COINCIDENCIA TOTAL
         function buscarPorCodigo(tipo) {
-            const val = document.getElementById(tipo === 'IN' ? 'in-search-cod' : 'out-search-cod').value.trim().toUpperCase();
+            const input = document.getElementById(tipo === 'IN' ? 'in-search-cod' : 'out-search-cod');
+            const val = input.value.trim().toUpperCase();
             const sel = document.getElementById(tipo === 'IN' ? 'in-sel' : 'out-sel');
+            
             const p = db.productos.find(x => x.cod === val);
-            if(p) sel.value = p.cod;
+            if(p) {
+                sel.value = p.cod;
+            } else {
+                alert("Código no encontrado. Verifique que sea exacto.");
+            }
         }
 
         function checkExistente() {
@@ -129,7 +134,6 @@
                 document.getElementById('ex-min').value = p.min;
                 document.getElementById('box-ini').style.opacity = "0.3";
             } else { 
-                document.getElementById('ex-nom').value = ""; // Limpiar si no existe
                 document.getElementById('box-ini').style.opacity = "1"; 
             }
         }
@@ -142,6 +146,10 @@
 
         function openModal(id, clear = false) { 
             document.getElementById(id).style.display = 'block'; 
+            if(clear) {
+                const inputs = document.getElementById(id).querySelectorAll('input');
+                inputs.forEach(i => i.value = "");
+            }
             refreshSelects(); 
         }
 
@@ -162,8 +170,8 @@
             const cod = document.getElementById(t+'-sel').value;
             const cant = parseInt(document.getElementById(t+'-cant').value) || 0;
             const prod = db.productos.find(x => x.cod === cod);
-            if(!prod || cant <= 0) return alert("Error en datos.");
-            if(tipo === 'OUT' && prod.stock < cant) return alert("SIN STOCK.");
+            if(!prod || cant <= 0) return alert("Seleccione un material válido.");
+            if(tipo === 'OUT' && prod.stock < cant) return alert("STOCK INSUFICIENTE.");
             
             tipo === 'IN' ? (prod.ent += cant, prod.stock += cant) : (prod.sal += cant, prod.stock -= cant);
             db.movimientos.push({ id: Date.now(), tipo: tipo==='IN'?'ENTRADA':'SALIDA', cod: prod.nom, codReal: prod.cod, cant, guia: document.getElementById(t+'-guia').value, fec: document.getElementById(t+'-fec').value, pat: document.getElementById(t+'-pat').value, cho: document.getElementById(t+'-cho').value, extra: tipo === 'IN' ? document.getElementById('in-pro').value : document.getElementById('out-des').value });
@@ -171,7 +179,7 @@
         }
 
         function borrarMovimiento(id) {
-            if(!confirm("¿Borrar registro y ajustar stock?")) return;
+            if(!confirm("¿Desea anular este movimiento? El stock se corregirá.")) return;
             const m = db.movimientos.find(x => x.id === id);
             const p = db.productos.find(x => x.cod === m.codReal);
             if(p) {
@@ -183,7 +191,7 @@
         }
 
         function borrarMaterial(cod) {
-            if(confirm("¿Eliminar material permanentemente?")) {
+            if(confirm("¿Eliminar material?")) {
                 db.productos = db.productos.filter(p => p.cod !== cod);
                 save(); updateUI();
             }
@@ -198,7 +206,7 @@
 
             const hist = document.getElementById('historial-table');
             if(hist) {
-                hist.innerHTML = db.movimientos.slice().reverse().map(m => `<tr><td>${m.fec}</td><td>${m.tipo}</td><td>${m.guia}</td><td>${m.codReal}</td><td>${m.cant}</td><td><button class="btn-del" onclick="borrarMovimiento(${m.id})">BORRAR</button></td></tr>`).join('');
+                hist.innerHTML = db.movimientos.slice().reverse().map(m => `<tr><td>${m.fec}</td><td>${m.tipo}</td><td>${m.guia}</td><td>${m.codReal}</td><td>${m.cant}</td><td><button class="btn-del" onclick="borrarMovimiento(${m.id})">ANULAR</button></td></tr>`).join('');
             }
 
             document.getElementById('d-total').innerText = db.productos.reduce((a,b) => a + b.stock, 0);
@@ -217,7 +225,7 @@
 
         function genPDFMovs() {
             const g = document.getElementById('rep-guia-sel').value;
-            if(!g) return alert("Seleccione una guía");
+            if(!g) return alert("No hay guía seleccionada");
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
             const data = db.movimientos.filter(m => m.guia === g);
             doc.text("AGR EL MAITEN LTDA - GUÍA N°: " + g, 14, 15);
@@ -251,7 +259,7 @@
         }
 
         function limpiarBaseDeDatos() {
-            if(confirm("⚠️ ¿BORRAR TODO?") && confirm("❗ ¿ÚLTIMA ADVERTENCIA?")) {
+            if(confirm("⚠️ ¿BORRAR TODO?") && confirm("❗ ¿CONFIRMA REINICIO TOTAL?")) {
                 db = { productos: [], movimientos: [] };
                 save(); updateUI();
             }
